@@ -20,7 +20,7 @@ const Header: React.FC<HeaderProps> = ({ onNavClick, onAdminClick, currentView }
   ];
 
   return (
-    <header className="w-full bg-brand-bg text-brand-dark border-b border-gray-200 sticky top-0 z-50">
+    <header className="w-full bg-brand-bg text-brand-dark border-b border-gray-200">
       {/* Top Utility Bar */}
       <div className="border-b border-gray-200 py-2.5 px-4 md:px-8 flex flex-col md:flex-row justify-between items-center text-[10px] md:text-[11px] font-bold tracking-[0.2em] uppercase">
         <div className="flex gap-4 md:gap-8 mb-2 md:mb-0">
