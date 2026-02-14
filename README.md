@@ -1,11 +1,41 @@
-<div align="center">
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+# YouthStartups.in - Production Setup Guide
 
-  <h1>Built with AI Studio</h2>
+## Overview
+A high-performance editorial platform built for scale.
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+## Infrastructure Setup
+1. **Firebase**:
+   - Create a project at [Firebase Console](https://console.firebase.google.com).
+   - Enable **Authentication** (Email/Password).
+   - Enable **Firestore Database** in Production Mode.
+   - Enable **Cloud Storage** for assets.
+   - Create a Web App and copy credentials to `lib/firebase.ts`.
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+2. **Firestore Rules**:
+```javascript
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /posts/{post} {
+      allow read: if true;
+      allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'editor'];
+    }
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if false; // Role management should be done via Cloud Functions or Admin SDK
+    }
+  }
+}
+```
 
-</div>
+## Deployment
+- **Frontend**: Deploy to Vercel for optimal Next.js/React performance.
+- **Environment Variables**:
+  - `FIREBASE_API_KEY`
+  - `FIREBASE_AUTH_DOMAIN`
+  - `FIREBASE_PROJECT_ID`
+
+## Monetization Plan
+- **Sponsored Content**: Flag posts with `sponsored: true` in the DB to trigger CSS highlights.
+- **Native Ads**: Inject `AdPlaceholder` components every 5 stories.
+- **Premium Newsletter**: Connect the `newsletterSubscribers` collection to Mailchimp or Revue.
