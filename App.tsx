@@ -8,17 +8,19 @@ import ArticlePage from './components/ArticlePage';
 import CategoryPage from './components/CategoryPage';
 import AuthorPage from './components/AuthorPage';
 import AdminPage from './components/AdminPage';
+import LoginPage from './components/LoginPage';
 import Newsletter from './components/Newsletter';
 import Footer from './components/Footer';
 import { Story } from './types';
 import { Home, TrendingUp, Cpu, Users, Search } from 'lucide-react';
-import { AuthProvider } from './lib/AuthContext';
+import { AuthProvider, useAuth } from './lib/AuthContext';
 
 import { InteractiveMenu, InteractiveMenuItem } from './components/ui/modern-mobile-menu';
 
 import { LATEST_STORIES } from './constants';
 
 const AppContent: React.FC = () => {
+  const { user, loading } = useAuth();
   const [stories, setStories] = useState<Story[]>(LATEST_STORIES);
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -26,7 +28,7 @@ const AppContent: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isSidebarMinimized, setIsSidebarMinimized] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
-  const [isAdminPage, setIsAdminPage] = useState(false);
+  const [currentView, setCurrentView] = useState<'home' | 'admin' | 'login'>('home');
 
   const mobileMenuItems: InteractiveMenuItem[] = [
     { label: 'Home', icon: Home },
@@ -63,16 +65,41 @@ const AppContent: React.FC = () => {
   }, [selectedStory, selectedCategory, selectedAuthorId]);
 
   useEffect(() => {
-    const path = window.location.pathname;
-    setIsAdminPage(path === '/adminpage');
-  }, [window.location.pathname]);
+    const handleNavigation = () => {
+      const path = window.location.pathname;
+      if (path === '/admin' || path === '/adminpage') {
+        if (!loading) {
+          if (user) {
+            setCurrentView('admin');
+          } else {
+            window.history.pushState({}, '', '/login');
+            setCurrentView('login');
+          }
+        }
+      } else if (path === '/login') {
+        if (user) {
+          window.history.pushState({}, '', '/admin');
+          setCurrentView('admin');
+        } else {
+          setCurrentView('login');
+        }
+      } else {
+        setCurrentView('home');
+      }
+    };
+
+    handleNavigation();
+    window.addEventListener('popstate', handleNavigation);
+    return () => window.removeEventListener('popstate', handleNavigation);
+  }, [user, loading]);
 
   const handleCategorySelect = (category: string | null) => {
     setSelectedCategory(category);
     setSelectedStory(null);
     setSelectedAuthorId(null);
     setSearchQuery('');
-    setIsAdminPage(false);
+    setCurrentView('home');
+    window.history.pushState({}, '', '/');
   };
 
   const handleSearch = (query: string) => {
@@ -81,7 +108,7 @@ const AppContent: React.FC = () => {
       setSelectedCategory('Search Results');
       setSelectedStory(null);
       setSelectedAuthorId(null);
-      setIsAdminPage(false);
+      setCurrentView('home');
     } else {
       setSelectedCategory(null);
     }
@@ -91,22 +118,38 @@ const AppContent: React.FC = () => {
     setSelectedStory(story);
     setSelectedCategory(null);
     setSelectedAuthorId(null);
-    setIsAdminPage(false);
+    setCurrentView('home');
   };
 
   const handleAuthorSelect = (authorId: string) => {
     setSelectedAuthorId(authorId);
     setSelectedStory(null);
     setSelectedCategory(null);
-    setIsAdminPage(false);
+    setCurrentView('home');
   };
 
   const toggleSidebarMinimize = () => {
     setIsSidebarMinimized(!isSidebarMinimized);
   };
 
-  if (isAdminPage) {
-    return <AdminPage onBack={() => setIsAdminPage(false)} stories={stories} setStories={setStories} />;
+  const handleLoginSuccess = () => {
+    window.history.pushState({}, '', '/admin');
+    setCurrentView('admin');
+  };
+
+  if (loading) {
+    return <div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>;
+  }
+
+  if (currentView === 'login') {
+    return <LoginPage onLoginSuccess={handleLoginSuccess} />;
+  }
+
+  if (currentView === 'admin') {
+    return <AdminPage onBack={() => {
+      window.history.pushState({}, '', '/');
+      setCurrentView('home');
+    }} stories={stories} setStories={setStories} />;
   }
 
   return (

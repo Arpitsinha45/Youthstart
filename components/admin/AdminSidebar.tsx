@@ -10,6 +10,7 @@ interface SidebarProps {
   onBack: () => void;
   isOpen: boolean;
   onClose: () => void;
+  onSignOut: () => void;
 }
 
 const navItems = [
@@ -23,7 +24,7 @@ const navItems = [
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
-export const AdminSidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onBack, isOpen, onClose }) => {
+export const AdminSidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onBack, isOpen, onClose, onSignOut }) => {
   return (
     <>
       {/* Mobile Overlay */}
@@ -74,7 +75,10 @@ export const AdminSidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, 
             <ArrowLeft className="w-4 h-4" />
             Back to Site
           </button>
-          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-400/10 transition-colors">
+          <button 
+            onClick={onSignOut}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-400/10 transition-colors"
+          >
             <LogOut className="w-4 h-4" />
             Sign Out
           </button>
