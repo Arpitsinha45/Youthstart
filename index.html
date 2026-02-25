@@ -16,10 +16,11 @@
           extend: {
             colors: {
               brand: {
-                bg: '#f5f1ea',
-                accent: '#a83232',
-                dark: '#111111',
-                gray: '#4a4a4a',
+                bg: '#0a0a0a',
+                accent: '#ffffff',
+                dark: '#000000',
+                gray: '#888888',
+                border: 'rgba(255,255,255,0.1)',
               },
             },
             fontFamily: {
@@ -32,10 +33,11 @@
     </script>
     <style>
       body {
-        background-color: #f5f1ea;
-        color: #111111;
+        background-color: #000000;
+        color: #ffffff;
         font-family: 'Inter', sans-serif;
         scroll-behavior: smooth;
+        overflow-x: hidden;
       }
       .serif-title { font-family: 'Playfair Display', serif; }
       .line-clamp-2 {
@@ -44,10 +46,21 @@
         -webkit-box-orient: vertical;
         overflow: hidden;
       }
-      ::-webkit-scrollbar { width: 6px; }
-      ::-webkit-scrollbar-track { background: #f5f1ea; }
-      ::-webkit-scrollbar-thumb { background: #a83232; }
-      .admin-sidebar { background: #0f0f0f; }
+      .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      ::-webkit-scrollbar { width: 4px; }
+      ::-webkit-scrollbar-track { background: #000000; }
+      ::-webkit-scrollbar-thumb { background: #333333; }
+      
+      .glass {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
     </style>
     <script type="importmap">
 {
@@ -68,8 +81,10 @@
   }
 }
 </script>
-  </head>
+  <link rel="stylesheet" href="/index.css">
+</head>
   <body>
     <div id="root"></div>
-  </body>
+  <script type="module" src="/index.tsx"></script>
+</body>
 </html>

@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { Twitter, Linkedin, Facebook, Link2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Twitter, Linkedin, Facebook, Link2, Check, Mail, Share2 } from 'lucide-react';
 
 interface SocialShareProps {
   title: string;
@@ -8,13 +8,42 @@ interface SocialShareProps {
 }
 
 const SocialShare: React.FC<SocialShareProps> = ({ title, className = "" }) => {
+  const [copied, setCopied] = useState(false);
+
   const handleShare = (platform: string) => {
-    // Mock sharing functionality
-    console.log(`Sharing "${title}" on ${platform}`);
-    alert(`This would open a sharing dialog for ${platform}`);
+    const url = window.location.href;
+    const encodedUrl = encodeURIComponent(url);
+    const encodedTitle = encodeURIComponent(title);
+    const encodedBody = encodeURIComponent(`Check out this article: ${title} - ${url}`);
+
+    switch (platform) {
+      case 'Twitter':
+        window.open(`https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`, '_blank', 'width=600,height=400');
+        break;
+      case 'LinkedIn':
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`, '_blank', 'width=600,height=400');
+        break;
+      case 'Facebook':
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`, '_blank', 'width=600,height=400');
+        break;
+      case 'WhatsApp':
+        window.open(`https://api.whatsapp.com/send?text=${encodedTitle}%20${encodedUrl}`, '_blank');
+        break;
+      case 'Email':
+        window.open(`mailto:?subject=${encodedTitle}&body=${encodedBody}`, '_blank');
+        break;
+      case 'Link':
+        navigator.clipboard.writeText(url).then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        });
+        break;
+      default:
+        break;
+    }
   };
 
-  const iconClasses = "w-4 h-4 text-gray-400 hover:text-brand-accent transition-colors cursor-pointer";
+  const iconClasses = "w-4 h-4 text-gray-400 hover:text-white transition-colors cursor-pointer";
 
   return (
     <div className={`flex items-center gap-6 ${className}`}>
@@ -28,8 +57,14 @@ const SocialShare: React.FC<SocialShareProps> = ({ title, className = "" }) => {
       <button onClick={() => handleShare('Facebook')} aria-label="Share on Facebook">
         <Facebook className={iconClasses} />
       </button>
-      <button onClick={() => handleShare('Link')} aria-label="Copy Link">
-        <Link2 className={iconClasses} />
+      <button onClick={() => handleShare('WhatsApp')} aria-label="Share on WhatsApp">
+        <Share2 className={iconClasses} />
+      </button>
+      <button onClick={() => handleShare('Email')} aria-label="Share via Email">
+        <Mail className={iconClasses} />
+      </button>
+      <button onClick={() => handleShare('Link')} aria-label="Copy Link" className="relative">
+        {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Link2 className={iconClasses} />}
       </button>
     </div>
   );

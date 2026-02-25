@@ -1,77 +1,183 @@
 
-import React from 'react';
-import { UserCircle } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { ChevronDown, Search, Bell, User, LogOut, PlusCircle, X, Menu } from 'lucide-react';
+import { CATEGORIES } from '../constants';
+import { useAuth } from '../lib/AuthContext';
 
 interface HeaderProps {
-  onNavClick?: (view: string) => void;
-  onAdminClick?: () => void;
-  currentView?: string;
+  onCategorySelect: (category: string | null) => void;
+  isSidebarMinimized: boolean;
+  onSearch: (query: string) => void;
+  searchQuery: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ onNavClick, onAdminClick, currentView }) => {
-  const navItems = [
-    { label: 'Home', id: 'HOME' },
-    { label: 'Founder Stories', id: 'FOUNDER_STORIES' },
-    { label: 'Funding News', id: 'FUNDING_NEWS' },
-    { label: 'Student Startups', id: 'STUDENT_STARTUPS' },
-    { label: 'Side Hustles', id: 'SIDE_HUSTLES' },
-    { label: 'Tech', id: 'TECH' },
-    { label: 'Strategy', id: 'STRATEGY' },
-  ];
+const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, onSearch, searchQuery }) => {
+  const { user, signIn, signOut } = useAuth();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isSearchOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isSearchOpen]);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      onSearch(searchQuery.trim());
+    }
+  };
+
+  const clearSearch = () => {
+    onSearch('');
+    setIsSearchOpen(false);
+  };
+
+  const handleCategoryClick = (category: string | null) => {
+    onCategorySelect(category);
+    setIsMobileMenuOpen(false);
+  };
 
   return (
-    <header className="w-full bg-brand-bg text-brand-dark border-b border-gray-200">
-      {/* Top Utility Bar */}
-      <div className="border-b border-gray-200 py-2.5 px-4 md:px-8 flex flex-col md:flex-row justify-between items-center text-[10px] md:text-[11px] font-bold tracking-[0.2em] uppercase">
-        <div className="flex gap-4 md:gap-8 mb-2 md:mb-0">
-          <button onClick={() => onNavClick?.('ABOUT')} className={`hover:text-brand-accent transition-colors ${currentView === 'ABOUT' ? 'text-brand-accent' : ''}`}>ABOUT</button>
-          <button onClick={() => onNavClick?.('SUBMIT_STORY')} className={`hover:text-brand-accent transition-colors ${currentView === 'SUBMIT_STORY' ? 'text-brand-accent' : ''}`}>SUBMIT STORY</button>
-          <button onClick={() => onNavClick?.('STARTUP_DIRECTORY')} className={`hover:text-brand-accent transition-colors ${currentView === 'STARTUP_DIRECTORY' ? 'text-brand-accent' : ''}`}>STARTUP DIRECTORY</button>
-          <button onClick={() => onNavClick?.('CONTACT')} className={`hover:text-brand-accent transition-colors ${currentView === 'CONTACT' ? 'text-brand-accent' : ''}`}>CONTACT</button>
-        </div>
-        <div className="flex gap-6 items-center">
-          <a href="mailto:hello@youthstartups.in" className="lowercase text-gray-500 font-medium hover:text-brand-accent transition-colors tracking-normal">hello@youthstartups.in</a>
-          <div className="flex items-center gap-4 border-l border-gray-300 pl-6">
-            <button onClick={onAdminClick} className="flex items-center gap-1.5 hover:text-brand-accent transition-colors">
-              <UserCircle className="w-3.5 h-3.5" /> Staff Login
-            </button>
+    <header className={`fixed top-0 right-0 h-16 border-b border-brand-border bg-black/80 backdrop-blur-md z-40 flex items-center px-4 md:px-8 lg:px-12 transition-all duration-500 ${isSidebarMinimized ? 'left-0 lg:left-20' : 'left-0 lg:left-64'}`}>
+      <div className="flex items-center justify-between w-full relative">
+        
+        {/* Search Bar Overlay */}
+        {isSearchOpen ? (
+          <div className="absolute inset-0 flex items-center bg-black/90 z-10 w-full">
+            <form onSubmit={handleSearchSubmit} className="flex-grow flex items-center gap-3">
+              <Search className="w-5 h-5 text-gray-400" />
+              <input 
+                ref={searchInputRef}
+                type="text" 
+                placeholder="Search articles, founders, topics..."
+                value={searchQuery}
+                onChange={(e) => onSearch(e.target.value)}
+                className="flex-grow bg-transparent border-none outline-none text-white text-sm placeholder:text-gray-600"
+              />
+              <button 
+                type="button"
+                onClick={clearSearch}
+                className="text-gray-500 hover:text-white transition-colors p-2"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </form>
           </div>
-        </div>
-      </div>
-
-      {/* Main Branding - Centered Logo Only */}
-      <div className="py-10 md:py-16 px-4 md:px-8 max-w-screen-2xl mx-auto flex items-center justify-center">
-        <div className="flex flex-col items-center justify-center text-center cursor-pointer group" onClick={() => onNavClick?.('HOME')}>
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter serif-title whitespace-nowrap leading-none transition-transform group-hover:scale-[1.02] duration-500">
-            YOUTHSTARTUPS.IN
-          </h1>
-          <p className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.5em] text-brand-accent mt-6 opacity-90">
-            Inspiring the Next Generation of Entrepreneurs
-          </p>
-        </div>
-      </div>
-
-      {/* Primary Navigation Bar */}
-      <nav className="border-t border-gray-300 bg-white shadow-sm overflow-x-auto no-scrollbar">
-        <ul className="flex items-center justify-center min-w-max px-4 md:px-0 py-5 gap-8 md:gap-14 text-[10px] md:text-[11px] font-black tracking-[0.2em] uppercase">
-          {navItems.map((item) => (
-            <li 
-              key={item.id}
-              onClick={() => onNavClick?.(item.id)}
-              className={`cursor-pointer transition-all relative pb-1 whitespace-nowrap ${
-                currentView === item.id 
-                ? 'text-brand-accent' 
-                : 'text-gray-400 hover:text-brand-dark'
-              }`}
+        ) : (
+          <nav className="hidden md:flex items-center gap-8 overflow-x-auto no-scrollbar">
+            <button 
+              onClick={() => handleCategoryClick(null)}
+              className="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors whitespace-nowrap"
             >
-              {item.label}
-              {currentView === item.id && (
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-brand-accent animate-in fade-in slide-in-from-left-1 duration-300"></span>
-              )}
-            </li>
+              Home
+            </button>
+            {CATEGORIES.map((cat) => (
+              <button 
+                key={cat} 
+                onClick={() => handleCategoryClick(cat)}
+                className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors whitespace-nowrap"
+              >
+                {cat}
+                <ChevronDown className="w-3 h-3 opacity-50" />
+              </button>
+            ))}
+          </nav>
+        )}
+
+        {/* Mobile Logo & Hamburger (Visible when sidebar is hidden and search is closed) */}
+        {!isSearchOpen && (
+          <div className="md:hidden flex items-center gap-3">
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="text-gray-500 hover:text-white transition-colors p-1"
+            >
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => handleCategoryClick(null)}>
+              <span className="text-sm font-bold tracking-tighter">YouthStartup.in</span>
+            </div>
+          </div>
+        )}
+
+        <div className={`flex items-center gap-4 sm:gap-6 ${isSearchOpen ? 'hidden' : ''}`}>
+          <button 
+            onClick={() => setIsSearchOpen(true)}
+            className="text-gray-500 hover:text-white transition-colors"
+          >
+            <Search className="w-4 h-4" />
+          </button>
+          
+          {user ? (
+            <div className="flex items-center gap-4">
+              <button className="hidden sm:flex items-center gap-2 px-4 py-1.5 bg-white text-black rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-gray-200 transition-all">
+                <PlusCircle className="w-3 h-3" />
+                Upload News
+              </button>
+              <div className="flex items-center gap-2 group relative">
+                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-brand-border cursor-pointer">
+                  <User className="w-4 h-4" />
+                </div>
+                <div className="absolute top-full right-0 mt-2 w-48 bg-black border border-brand-border rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all p-2 z-50">
+                  <div className="px-4 py-2 border-b border-brand-border mb-2">
+                    <p className="text-[10px] font-bold text-white truncate">{user.displayName}</p>
+                    <p className="text-[9px] text-gray-500 truncate">{user.email}</p>
+                  </div>
+                  <button 
+                    onClick={signOut}
+                    className="w-full flex items-center gap-2 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/5 rounded transition-all"
+                  >
+                    <LogOut className="w-3 h-3" />
+                    Sign Out
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center gap-4">
+              <button 
+                onClick={signIn}
+                className="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
+              >
+                Sign In
+              </button>
+              <button className="hidden sm:flex items-center gap-2 px-4 py-1.5 border border-brand-border rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all">
+                <Bell className="w-3 h-3" />
+                Subscribe
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile Menu Dropdown */}
+      {isMobileMenuOpen && (
+        <div className="absolute top-16 left-0 w-full bg-black/95 backdrop-blur-xl border-b border-brand-border md:hidden flex flex-col py-4 px-6 z-50 shadow-2xl">
+          <button 
+            onClick={() => handleCategoryClick(null)}
+            className="py-3 text-left text-sm font-bold uppercase tracking-widest text-white border-b border-white/10"
+          >
+            Home
+          </button>
+          {CATEGORIES.map((cat) => (
+            <button 
+              key={cat} 
+              onClick={() => handleCategoryClick(cat)}
+              className="py-3 text-left text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white border-b border-white/10 transition-colors"
+            >
+              {cat}
+            </button>
           ))}
-        </ul>
-      </nav>
+          {!user && (
+            <button className="mt-4 flex items-center justify-center gap-2 px-4 py-3 bg-white text-black rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-gray-200 transition-all">
+              <Bell className="w-4 h-4" />
+              Subscribe
+            </button>
+          )}
+        </div>
+      )}
     </header>
   );
 };

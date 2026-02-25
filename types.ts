@@ -5,6 +5,19 @@ export interface User {
   email: string;
 }
 
+export interface Author {
+  id: string;
+  name: string;
+  bio: string;
+  avatar: string;
+  role: string;
+  social?: {
+    twitter?: string;
+    linkedin?: string;
+    website?: string;
+  };
+}
+
 export interface Story {
   id: string;
   title: string;
@@ -14,10 +27,12 @@ export interface Story {
   content: string;
   featuredImage: string;
   author: string;
+  authorId?: string; // Optional for backward compatibility or simple cases
   publishedAt: string;
   readTime: string;
   published: boolean;
   sponsored: boolean;
+  featured?: boolean;
 }
 
 export interface TrendingStartup {

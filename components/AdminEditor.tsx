@@ -19,6 +19,8 @@ const AdminEditor: React.FC<EditorProps> = ({ story, onSave, onCancel }) => {
     featuredImage: story?.featuredImage || '',
     published: story?.published ?? false,
     sponsored: story?.sponsored ?? false,
+    featured: story?.featured ?? false,
+    publishedAt: story?.publishedAt || '',
   });
 
   const [preview, setPreview] = useState(false);
@@ -136,9 +138,17 @@ const AdminEditor: React.FC<EditorProps> = ({ story, onSave, onCancel }) => {
                 <span className="text-xs font-semibold">Slug</span>
                 <input name="slug" value={formData.slug} onChange={handleChange} className="text-xs bg-white border p-1 outline-none w-32" />
               </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold">Schedule</span>
+                <input type="datetime-local" name="publishedAt" value={formData.publishedAt} onChange={handleChange} className="text-xs bg-white border p-1 outline-none w-32" />
+              </div>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" name="published" checked={formData.published} onChange={handleChange} className="accent-brand-accent" />
                 <span className="text-xs font-semibold">Published</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" name="featured" checked={formData.featured} onChange={handleChange} className="accent-brand-accent" />
+                <span className="text-xs font-semibold">Featured</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" name="sponsored" checked={formData.sponsored} onChange={handleChange} className="accent-brand-accent" />
