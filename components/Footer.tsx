@@ -2,7 +2,11 @@
 import React from 'react';
 import { Twitter, Linkedin, Instagram, ArrowRight } from 'lucide-react';
 
-const Footer: React.FC = () => {
+interface FooterProps {
+  onAboutClick?: () => void;
+}
+
+const Footer: React.FC<FooterProps> = ({ onAboutClick }) => {
   return (
     <footer className="border-t border-white/10 mt-auto bg-black text-white pt-20 pb-10 px-6 md:px-8 lg:px-12">
       <div className="max-w-7xl mx-auto">
@@ -44,7 +48,14 @@ const Footer: React.FC = () => {
             <div>
               <h6 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white mb-6">Company</h6>
               <ul className="space-y-4">
-                <li><a href="#" className="text-sm text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group"><ArrowRight className="w-3 h-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" /> About Us</a></li>
+                <li>
+                  <button 
+                    onClick={onAboutClick}
+                    className="text-sm text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group text-left w-full"
+                  >
+                    <ArrowRight className="w-3 h-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" /> About Us
+                  </button>
+                </li>
                 <li><a href="#" className="text-sm text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group"><ArrowRight className="w-3 h-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" /> Careers</a></li>
                 <li><a href="#" className="text-sm text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group"><ArrowRight className="w-3 h-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" /> Contact</a></li>
                 <li><a href="#" className="text-sm text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group"><ArrowRight className="w-3 h-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all" /> Submit a Story</a></li>

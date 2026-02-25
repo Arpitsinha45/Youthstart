@@ -9,11 +9,13 @@ import CategoryPage from './components/CategoryPage';
 import AuthorPage from './components/AuthorPage';
 import AdminPage from './components/AdminPage';
 import LoginPage from './components/LoginPage';
+import AboutPage from './components/AboutPage';
 import Newsletter from './components/Newsletter';
 import Footer from './components/Footer';
 import { Story } from './types';
 import { Home, TrendingUp, Cpu, Users, Search } from 'lucide-react';
 import { AuthProvider, useAuth } from './lib/AuthContext';
+import { getPosts } from './lib/api';
 
 import { InteractiveMenu, InteractiveMenuItem } from './components/ui/modern-mobile-menu';
 
@@ -28,7 +30,7 @@ const AppContent: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isSidebarMinimized, setIsSidebarMinimized] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentView, setCurrentView] = useState<'home' | 'admin' | 'login'>('home');
+  const [currentView, setCurrentView] = useState<'home' | 'admin' | 'login' | 'about' | 'article'>('home');
 
   const mobileMenuItems: InteractiveMenuItem[] = [
     { label: 'Home', icon: Home },
@@ -55,19 +57,31 @@ const AppContent: React.FC = () => {
   };
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-    // Simulate data fetching
-    setIsLoading(true);
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-    return () => clearTimeout(timer);
-  }, [selectedStory, selectedCategory, selectedAuthorId]);
+    const fetchStories = async () => {
+      setIsLoading(true);
+      try {
+        const fetchedStories = await getPosts();
+        if (fetchedStories.length > 0) {
+          setStories(fetchedStories);
+        } else {
+          // Fallback to static data if Supabase is empty or fails
+          setStories(LATEST_STORIES);
+        }
+      } catch (error) {
+        console.error("Failed to fetch stories", error);
+        setStories(LATEST_STORIES);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchStories();
+  }, []);
 
   useEffect(() => {
     const handleNavigation = () => {
       const path = window.location.pathname;
-      if (path === '/admin' || path === '/adminpage') {
+      if (path === '/admin') {
         if (!loading) {
           if (user) {
             setCurrentView('admin');
@@ -83,8 +97,15 @@ const AppContent: React.FC = () => {
         } else {
           setCurrentView('login');
         }
+      } else if (path === '/about') {
+        setCurrentView('about');
+      } else if (path.startsWith('/article/')) {
+        setCurrentView('article');
+        // We don't set selectedStory here because ArticlePage will fetch it by slug
+        setSelectedStory(null); 
       } else {
         setCurrentView('home');
+        setSelectedStory(null);
       }
     };
 
@@ -118,7 +139,13 @@ const AppContent: React.FC = () => {
     setSelectedStory(story);
     setSelectedCategory(null);
     setSelectedAuthorId(null);
-    setCurrentView('home');
+    setCurrentView('article');
+    if (story.slug) {
+      window.history.pushState({}, '', `/article/${story.slug}`);
+    } else {
+      // Fallback for old stories without slug
+      window.history.pushState({}, '', `/article/${story.id}`);
+    }
   };
 
   const handleAuthorSelect = (authorId: string) => {
@@ -126,6 +153,14 @@ const AppContent: React.FC = () => {
     setSelectedStory(null);
     setSelectedCategory(null);
     setCurrentView('home');
+  };
+
+  const handleAboutClick = () => {
+    setCurrentView('about');
+    window.history.pushState({}, '', '/about');
+    setSelectedStory(null);
+    setSelectedCategory(null);
+    setSelectedAuthorId(null);
   };
 
   const toggleSidebarMinimize = () => {
@@ -176,14 +211,21 @@ const AppContent: React.FC = () => {
           isSidebarMinimized={isSidebarMinimized}
           onSearch={handleSearch}
           searchQuery={searchQuery}
+          onAboutClick={handleAboutClick}
         />
 
         {/* Content with top margin for fixed header */}
         <main className="mt-16 flex-grow flex flex-col pb-24 lg:pb-0">
-          {selectedStory ? (
+          {currentView === 'about' ? (
+            <AboutPage />
+          ) : currentView === 'article' || selectedStory ? (
             <ArticlePage 
-              story={selectedStory} 
-              onBack={() => setSelectedStory(null)} 
+              story={selectedStory || undefined} 
+              onBack={() => {
+                setSelectedStory(null);
+                setCurrentView('home');
+                window.history.pushState({}, '', '/');
+              }} 
               onStoryClick={handleStorySelect}
               onAuthorClick={handleAuthorSelect}
             />
@@ -193,12 +235,14 @@ const AppContent: React.FC = () => {
               onStoryClick={handleStorySelect} 
               isLoading={isLoading}
               searchQuery={searchQuery}
+              stories={stories}
             />
           ) : selectedAuthorId ? (
             <AuthorPage
               authorId={selectedAuthorId}
               onBack={() => setSelectedAuthorId(null)}
               onStoryClick={handleStorySelect}
+              stories={stories}
             />
           ) : (
             <>
@@ -216,7 +260,7 @@ const AppContent: React.FC = () => {
           )}
         </main>
         
-        <Footer />
+        <Footer onAboutClick={handleAboutClick} />
       </div>
 
       {/* Mobile Sticky Bottom Navigation */}

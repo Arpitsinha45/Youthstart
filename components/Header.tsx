@@ -9,9 +9,10 @@ interface HeaderProps {
   isSidebarMinimized: boolean;
   onSearch: (query: string) => void;
   searchQuery: string;
+  onAboutClick: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, onSearch, searchQuery }) => {
+const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, onSearch, searchQuery, onAboutClick }) => {
   const { user, signIn, signOut } = useAuth();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -37,6 +38,11 @@ const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, o
 
   const handleCategoryClick = (category: string | null) => {
     onCategorySelect(category);
+    setIsMobileMenuOpen(false);
+  };
+
+  const handleAboutClick = () => {
+    onAboutClick();
     setIsMobileMenuOpen(false);
   };
 
@@ -73,6 +79,12 @@ const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, o
               className="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors whitespace-nowrap"
             >
               Home
+            </button>
+            <button 
+              onClick={handleAboutClick}
+              className="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors whitespace-nowrap"
+            >
+              About
             </button>
             {CATEGORIES.map((cat) => (
               <button 
@@ -160,6 +172,12 @@ const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, o
             className="py-3 text-left text-sm font-bold uppercase tracking-widest text-white border-b border-white/10"
           >
             Home
+          </button>
+          <button 
+            onClick={handleAboutClick}
+            className="py-3 text-left text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white border-b border-white/10 transition-colors"
+          >
+            About
           </button>
           {CATEGORIES.map((cat) => (
             <button 

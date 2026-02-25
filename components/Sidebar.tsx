@@ -58,7 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCategorySelect, onToggleMinimize, i
             />
             <div>
               <div className="text-sm font-semibold text-white group-hover:text-gray-200">
-                {user?.name || "Randy Carder"}
+                {user?.displayName || "Randy Carder"}
               </div>
               <div className="text-xs text-gray-500">Premium Plan</div>
             </div>
@@ -79,29 +79,39 @@ const Sidebar: React.FC<SidebarProps> = ({ onCategorySelect, onToggleMinimize, i
       {/* Main Navigation */}
       <nav className="mb-6">
         <ul className={`space-y-1 ${isMinimized ? 'flex flex-col items-center' : ''}`}>
-          <li>
+          <li className="relative group">
             <button 
               onClick={() => onCategorySelect(null)}
-              title={isMinimized ? "Home" : ""}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${selectedCategory === null || selectedCategory === undefined ? 'bg-white text-black' : 'text-gray-400 hover:bg-white/5 hover:text-white'} ${isMinimized ? 'justify-center' : ''}`}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${selectedCategory === null || selectedCategory === undefined ? 'bg-white text-black shadow-lg shadow-white/10' : 'text-gray-400 hover:bg-white/10 hover:text-white'} ${isMinimized ? 'justify-center' : ''}`}
             >
               <Home className="w-5 h-5 shrink-0" />
               {!isMinimized && <span className="text-sm font-medium">Home</span>}
             </button>
+            {isMinimized && (
+              <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-3 py-1.5 bg-white text-black text-xs font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 shadow-xl">
+                Home
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-white rotate-45"></div>
+              </div>
+            )}
           </li>
           {SIDEBAR_MENU.map((item) => {
             const Icon = ICON_MAP[item.id] || Zap;
             const isActive = selectedCategory === item.label;
             return (
-              <li key={item.id}>
+              <li key={item.id} className="relative group">
                 <button 
                   onClick={() => onCategorySelect(item.label)}
-                  title={isMinimized ? item.label : ""}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${isActive ? 'bg-white text-black' : 'text-gray-400 hover:bg-white/5 hover:text-white'} ${isMinimized ? 'justify-center' : ''}`}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${isActive ? 'bg-white text-black shadow-lg shadow-white/10' : 'text-gray-400 hover:bg-white/10 hover:text-white'} ${isMinimized ? 'justify-center' : ''}`}
                 >
                   <Icon className="w-5 h-5 shrink-0" />
                   {!isMinimized && <span className="text-sm font-medium whitespace-nowrap">{item.label}</span>}
                 </button>
+                {isMinimized && (
+                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-3 py-1.5 bg-white text-black text-xs font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 shadow-xl">
+                    {item.label}
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-white rotate-45"></div>
+                  </div>
+                )}
               </li>
             );
           })}

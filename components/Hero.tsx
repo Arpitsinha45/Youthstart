@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Play, ArrowRight, User, Bookmark, Share2, MessageSquare, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, User, Bookmark, Share2, MessageSquare, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Story } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -79,13 +79,6 @@ const Hero: React.FC<HeroProps> = ({ onStoryClick, stories }) => {
                 </div>
                 <span className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.2em]">Read Story</span>
               </button>
-              
-              <button className="flex items-center gap-3 md:gap-4 glass hover:bg-white/10 px-6 py-3 md:px-8 md:py-4 rounded-full transition-all group/btn">
-                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/20 flex items-center justify-center text-white group-hover/btn:scale-110 transition-transform">
-                  <Play className="w-4 h-4 fill-current" />
-                </div>
-                <span className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.2em]">Watch Breakdown</span>
-              </button>
             </div>
           </div>
         </motion.div>
@@ -108,7 +101,7 @@ const Hero: React.FC<HeroProps> = ({ onStoryClick, stories }) => {
             <ChevronRight className="w-6 h-6" />
           </button>
 
-          <div className="absolute bottom-8 left-6 md:left-12 lg:left-16 flex gap-2 z-10">
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
             {featuredStories.map((_, idx) => (
               <button
                 key={idx}

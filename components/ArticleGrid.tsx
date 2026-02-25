@@ -84,6 +84,8 @@ const ArticleGrid: React.FC<ArticleGridProps> = ({ onStoryClick, isLoading, stor
   const story3 = getStory(3);
   const story4 = getStory(4);
 
+  if (!story0) return null; // Or some empty state
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-px bg-white/10 border-y border-white/10">
       
@@ -205,7 +207,7 @@ const ArticleGrid: React.FC<ArticleGridProps> = ({ onStoryClick, isLoading, stor
           <img 
             src={story3?.featuredImage} 
             alt={story3?.title}
-            className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" 
+            className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700" 
             referrerPolicy="no-referrer"
           />
         </div>
@@ -231,7 +233,7 @@ const ArticleGrid: React.FC<ArticleGridProps> = ({ onStoryClick, isLoading, stor
           <img 
             src={story4?.featuredImage} 
             alt={story4?.title}
-            className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" 
+            className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700" 
             referrerPolicy="no-referrer"
           />
         </div>

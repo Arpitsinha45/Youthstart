@@ -1,6 +1,5 @@
 import React from 'react';
 import { Story } from '../types';
-import { LATEST_STORIES } from '../constants';
 import { ArrowRight, Clock } from 'lucide-react';
 import { motion } from 'motion/react';
 import { CategoryCardSkeleton, Skeleton } from './Skeleton';
@@ -10,12 +9,13 @@ interface CategoryPageProps {
   onStoryClick: (story: Story) => void;
   isLoading?: boolean;
   searchQuery?: string;
+  stories: Story[];
 }
 
-const CategoryPage: React.FC<CategoryPageProps> = ({ category, onStoryClick, isLoading, searchQuery }) => {
+const CategoryPage: React.FC<CategoryPageProps> = ({ category, onStoryClick, isLoading, searchQuery, stories }) => {
   const isSearch = category === 'Search Results';
   
-  const filteredStories = LATEST_STORIES.filter(story => {
+  const filteredStories = stories.filter(story => {
     if (isSearch && searchQuery) {
       const query = searchQuery.toLowerCase();
       return (
@@ -124,7 +124,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category, onStoryClick, isL
                         <img 
                           src={story.featuredImage} 
                           alt={story.title}
-                          className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700"
                           referrerPolicy="no-referrer"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

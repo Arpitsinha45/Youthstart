@@ -4,6 +4,7 @@ interface User {
   uid: string;
   email: string | null;
   displayName: string | null;
+  avatar?: string;
 }
 
 interface AuthContextType {
@@ -32,7 +33,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser({
       uid: '123',
       email: 'founder@youthstartup.in',
-      displayName: 'Founder User'
+      displayName: 'Founder User',
+      avatar: 'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?auto=format&fit=crop&q=80&w=200'
     });
   };
 
