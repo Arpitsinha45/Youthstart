@@ -5,20 +5,15 @@ import { Story } from '../types';
 import SocialShare from './SocialShare';
 import { motion, useScroll, useSpring } from 'motion/react';
 import { AUTHORS, LATEST_STORIES } from '../constants';
-import { getPostBySlug } from '../lib/api';
-
-
 
 interface ArticlePageProps {
-  story?: Story;
+  story: Story;
   onBack: () => void;
   onStoryClick: (story: Story) => void;
   onAuthorClick: (authorId: string) => void;
 }
 
-const ArticlePage: React.FC<ArticlePageProps> = ({ story: initialStory, onBack, onStoryClick, onAuthorClick }) => {
-  const [story, setStory] = useState<Story | undefined>(initialStory);
-  const [loading, setLoading] = useState(!initialStory);
+const ArticlePage: React.FC<ArticlePageProps> = ({ story, onBack, onStoryClick, onAuthorClick }) => {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -26,62 +21,7 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ story: initialStory, onBack, 
     restDelta: 0.001
   });
 
-  useEffect(() => {
-    const loadStory = async () => {
-      // Check if we have a slug in the URL path like /article/some-slug
-      const pathParts = window.location.pathname.split('/');
-      const articleIndex = pathParts.indexOf('article');
-      
-      if (articleIndex !== -1 && pathParts[articleIndex + 1]) {
-        const slug = pathParts[articleIndex + 1];
-        if (!initialStory || initialStory.slug !== slug) {
-          setLoading(true);
-          try {
-            const fetchedStory = await getPostBySlug(slug);
-            if (fetchedStory) {
-              setStory(fetchedStory);
-            }
-          } catch (error) {
-            console.error("Failed to load story", error);
-          } finally {
-            setLoading(false);
-          }
-        }
-      } else {
-        setLoading(false);
-      }
-    };
-
-    loadStory();
-    window.scrollTo(0, 0);
-  }, [initialStory]);
-
-  if (loading) {
-    return <div className="min-h-screen bg-black flex items-center justify-center text-white">Loading article...</div>;
-  }
-
-  if (!story) {
-    return (
-      <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white gap-4">
-        <p>Article not found.</p>
-        <button onClick={onBack} className="text-emerald-500 hover:underline">Back to Home</button>
-      </div>
-    );
-  }
-
-  const author = AUTHORS.find(a => a.id === story.authorId) || {
-    id: 'youthstartup',
-    name: story.author || 'YouthStartup Team',
-    role: 'Editor',
-    avatar: 'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?auto=format&fit=crop&q=80&w=100',
-    bio: 'Bringing you the latest stories from the startup world.',
-    social: {
-      twitter: 'https://twitter.com/youthstartup',
-      linkedin: 'https://linkedin.com/company/youthstartup',
-      website: 'https://youthstartup.com'
-    }
-  };
-
+  const author = AUTHORS.find(a => a.id === story.authorId);
   const otherArticles = LATEST_STORIES.filter(s => s.authorId === story.authorId && s.id !== story.id).slice(0, 3);
   
   const relatedArticles = LATEST_STORIES.filter(s => s.id !== story.id && s.category === story.category).slice(0, 3);
@@ -90,38 +30,12 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ story: initialStory, onBack, 
     relatedArticles.push(...additionalArticles);
   }
 
-  const siteUrl = 'https://youthstartup.in';
-  const siteName = 'YouthStartups.in';
-  const twitterHandle = '@youthstartup';
-
-  const title = story ? `${story.title} | ${siteName}` : `${siteName} - Inspiring the Next Generation of Entrepreneurs`;
-  const description = story?.excerpt || 'A premium editorial news platform focused on real entrepreneur stories, startup journeys, and business insights.';
-  const imageUrl = story?.featuredImage || `${siteUrl}/default-social-image.jpg`;
-  const canonicalUrl = story ? `${siteUrl}/article/${story.slug}` : siteUrl;
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <article className="relative min-h-screen bg-black text-white">
-      <title>{title}</title>
-      <meta name="description" content={description} />
-      <link rel="canonical" href={canonicalUrl} />
-
-      {/* Open Graph / Facebook */}
-      <meta property="og:type" content={story ? 'article' : 'website'} />
-      <meta property="og:url" content={canonicalUrl} />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      <meta property="og:image" content={imageUrl} />
-      <meta property="og:site_name" content={siteName} />
-
-      {/* Twitter */}
-      <meta property="twitter:card" content="summary_large_image" />
-      <meta property="twitter:url" content={canonicalUrl} />
-      <meta property="twitter:title" content={title} />
-      <meta property="twitter:description" content={description} />
-      <meta property="twitter:image" content={imageUrl} />
-      <meta name="twitter:site" content={twitterHandle} />
-      <meta name="twitter:creator" content={author?.social?.twitter || twitterHandle} />
-
       {/* Reading Progress Bar */}
       <motion.div 
         className="fixed top-16 left-0 right-0 h-1 bg-white origin-left z-50" 
@@ -161,40 +75,38 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ story: initialStory, onBack, 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
-            className="flex flex-wrap items-center justify-center gap-6 md:gap-8 py-6 border-y border-white/10 mb-12"
+            className="flex flex-wrap items-center justify-center gap-6 md:gap-10 border-y border-white/10 py-6 bg-white/[0.02] rounded-2xl mb-8"
           >
             <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-white">
-              <User className="w-4 h-4 text-emerald-500" />
+              <User className="w-3 h-3 text-gray-500" />
               {story.authorId ? (
-                <button onClick={() => onAuthorClick(story.authorId!)} className="hover:text-emerald-400 transition-colors">
-                  <span>{author.name}</span>
+                <button onClick={() => onAuthorClick(story.authorId!)} className="hover:text-gray-300 transition-colors">
+                  <span>{story.author}</span>
                 </button>
               ) : (
                 <span>{story.author}</span>
               )}
             </div>
-            <div className="w-1 h-1 rounded-full bg-white/30 hidden md:block"></div>
-            <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-gray-400">
-              <Calendar className="w-4 h-4" />
+            <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-gray-500">
+              <Calendar className="w-3 h-3" />
               <span>{story.publishedAt}</span>
             </div>
-            <div className="w-1 h-1 rounded-full bg-white/30 hidden md:block"></div>
-            <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-gray-400">
-              <Clock className="w-4 h-4" />
+            <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-gray-500">
+              <Clock className="w-3 h-3" />
               <span>{story.readTime} Read</span>
             </div>
-            <div className="hidden md:block w-px h-4 bg-white/10 mx-2"></div>
+            <div className="hidden md:block h-4 w-px bg-brand-border"></div>
             <SocialShare title={story.title} />
           </motion.div>
         </header>
 
         <motion.div 
-          initial={{ opacity: 0, scale: 0.98, y: 20 }}
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
-          className="relative aspect-[21/9] w-full overflow-hidden mb-16 md:mb-20 rounded-2xl shadow-2xl ring-1 ring-white/10"
+          className="relative aspect-[16/9] w-full overflow-hidden mb-16 md:mb-24 border border-white/10 rounded-2xl shadow-2xl"
         >
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10"></div>
           <img 
             src={story.featuredImage} 
             alt={story.title} 
@@ -203,35 +115,46 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ story: initialStory, onBack, 
           />
         </motion.div>
 
-        <div className="max-w-[680px] mx-auto">
-          {story.excerpt && (
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6 }}
-              className="text-xl md:text-2xl font-serif italic leading-relaxed text-gray-200 mb-16 pl-6 border-l-2 border-emerald-500"
-            >
-              {story.excerpt}
-            </motion.p>
-          )}
+        <div className="max-w-2xl mx-auto">
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6 }}
+            className="text-xl md:text-3xl font-light italic leading-relaxed text-gray-200 mb-16 serif-title border-l-4 border-emerald-500/50 pl-8 py-2"
+          >
+            {story.excerpt}
+          </motion.p>
           
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="prose prose-invert prose-lg md:prose-xl max-w-none 
-              prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-white
-              prose-p:text-gray-300 prose-p:leading-8 prose-p:mb-8
-              prose-a:text-emerald-500 prose-a:no-underline hover:prose-a:underline
-              prose-blockquote:border-l-emerald-500 prose-blockquote:bg-white/5 prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
-              prose-strong:text-white prose-strong:font-semibold
-              prose-li:text-gray-300 prose-li:marker:text-emerald-500
-              font-sans"
+            className="prose prose-invert max-w-none prose-p:text-lg md:prose-p:text-[22px] prose-p:leading-[1.9] prose-p:text-gray-300 prose-p:mb-10 font-sans"
           >
-            {/* Render content safely - in a real app use a markdown parser */}
-            <div dangerouslySetInnerHTML={{ __html: story.content }} />
+            <p>
+              In the fast-paced world of modern entrepreneurship, stories like this serve as a beacon for the next generation. 
+              Building a business is never just about the product; it's about the resilience of the founder and the 
+              strength of the community they build around their vision.
+            </p>
+            <p>
+              Across the ecosystem, we see a shift towards sustainable models and purpose-driven innovation. 
+              The journey described here highlights the critical moments of doubt and the eventual breakthroughs 
+              that define the startup experience. From initial ideation to the first major funding round, 
+              every step is a lesson in adaptability.
+            </p>
+            <blockquote className="border-l-4 border-emerald-500 bg-white/5 p-8 rounded-r-2xl my-16 shadow-lg">
+              <p className="text-2xl md:text-3xl font-bold text-white serif-title leading-snug italic mb-0">
+                "The greatest risk is not taking any risk in a world that's changing really quickly."
+              </p>
+              <footer className="text-xs text-gray-400 mt-6 uppercase tracking-[0.2em] font-bold">— Mark Zuckerberg</footer>
+            </blockquote>
+            <p>
+              As we continue to track the progress of {story.author}'s highlighted ventures, 
+              one thing remains clear: the barrier to entry has never been lower, yet the competition 
+              for meaningful impact has never been higher.
+            </p>
           </motion.div>
 
           {/* Author Section */}

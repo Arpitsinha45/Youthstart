@@ -1,8 +1,7 @@
 import React from 'react';
 import { 
   LayoutDashboard, FileText, Layers, Rocket, 
-  DollarSign, Mail, Palette, Settings, LogOut, ArrowLeft, X,
-  Send, Image
+  DollarSign, Mail, Palette, Settings, LogOut, ArrowLeft, X
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -19,8 +18,6 @@ const navItems = [
   { id: 'posts', label: 'Posts & Articles', icon: FileText },
   { id: 'pages', label: 'Page Builder', icon: Layers },
   { id: 'startups', label: 'Startups', icon: Rocket },
-  { id: 'submissions', label: 'Submissions', icon: Send },
-  { id: 'media', label: 'Media Library', icon: Image },
   { id: 'monetization', label: 'Monetization', icon: DollarSign },
   { id: 'newsletter', label: 'Newsletter', icon: Mail },
   { id: 'appearance', label: 'Appearance', icon: Palette },

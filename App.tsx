@@ -15,7 +15,6 @@ import Footer from './components/Footer';
 import { Story } from './types';
 import { Home, TrendingUp, Cpu, Users, Search } from 'lucide-react';
 import { AuthProvider, useAuth } from './lib/AuthContext';
-import { getPosts } from './lib/api';
 
 import { InteractiveMenu, InteractiveMenuItem } from './components/ui/modern-mobile-menu';
 
@@ -30,7 +29,7 @@ const AppContent: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isSidebarMinimized, setIsSidebarMinimized] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentView, setCurrentView] = useState<'home' | 'admin' | 'login' | 'about' | 'article'>('home');
+  const [currentView, setCurrentView] = useState<'home' | 'admin' | 'login' | 'about'>('home');
 
   const mobileMenuItems: InteractiveMenuItem[] = [
     { label: 'Home', icon: Home },
@@ -57,34 +56,19 @@ const AppContent: React.FC = () => {
   };
 
   useEffect(() => {
-    const fetchStories = async () => {
-      setIsLoading(true);
-      try {
-        const fetchedStories = await getPosts();
-        if (fetchedStories.length > 0) {
-          setStories(fetchedStories);
-        } else {
-          // Fallback to static data if Supabase is empty or fails
-          setStories(LATEST_STORIES);
-        }
-      } catch (error) {
-        console.error("Failed to fetch stories", error);
-        setStories(LATEST_STORIES);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchStories();
-  }, []);
+    window.scrollTo(0, 0);
+    // Simulate data fetching
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [selectedStory, selectedCategory, selectedAuthorId, currentView]);
 
   useEffect(() => {
-    // Ensure this only runs on the client side
-    if (typeof window === 'undefined') return;
-
     const handleNavigation = () => {
       const path = window.location.pathname;
-      if (path === '/admin') {
+      if (path === '/admin' || path === '/adminpage') {
         if (!loading) {
           if (user) {
             setCurrentView('admin');
@@ -102,13 +86,8 @@ const AppContent: React.FC = () => {
         }
       } else if (path === '/about') {
         setCurrentView('about');
-      } else if (path.startsWith('/article/')) {
-        setCurrentView('article');
-        // We don't set selectedStory here because ArticlePage will fetch it by slug
-        setSelectedStory(null); 
       } else {
         setCurrentView('home');
-        setSelectedStory(null);
       }
     };
 
@@ -142,13 +121,7 @@ const AppContent: React.FC = () => {
     setSelectedStory(story);
     setSelectedCategory(null);
     setSelectedAuthorId(null);
-    setCurrentView('article');
-    if (story.slug) {
-      window.history.pushState({}, '', `/article/${story.slug}`);
-    } else {
-      // Fallback for old stories without slug
-      window.history.pushState({}, '', `/article/${story.id}`);
-    }
+    setCurrentView('home');
   };
 
   const handleAuthorSelect = (authorId: string) => {
@@ -221,14 +194,10 @@ const AppContent: React.FC = () => {
         <main className="mt-16 flex-grow flex flex-col pb-24 lg:pb-0">
           {currentView === 'about' ? (
             <AboutPage />
-          ) : currentView === 'article' || selectedStory ? (
+          ) : selectedStory ? (
             <ArticlePage 
-              story={selectedStory || undefined} 
-              onBack={() => {
-                setSelectedStory(null);
-                setCurrentView('home');
-                window.history.pushState({}, '', '/');
-              }} 
+              story={selectedStory} 
+              onBack={() => setSelectedStory(null)} 
               onStoryClick={handleStorySelect}
               onAuthorClick={handleAuthorSelect}
             />
@@ -238,14 +207,12 @@ const AppContent: React.FC = () => {
               onStoryClick={handleStorySelect} 
               isLoading={isLoading}
               searchQuery={searchQuery}
-              stories={stories}
             />
           ) : selectedAuthorId ? (
             <AuthorPage
               authorId={selectedAuthorId}
               onBack={() => setSelectedAuthorId(null)}
               onStoryClick={handleStorySelect}
-              stories={stories}
             />
           ) : (
             <>
@@ -280,14 +247,10 @@ const AppContent: React.FC = () => {
   );
 };
 
-import ErrorBoundary from './components/ErrorBoundary';
-
 const App: React.FC = () => {
   return (
     <AuthProvider>
-      <ErrorBoundary>
-        <AppContent />
-      </ErrorBoundary>
+      <AppContent />
     </AuthProvider>
   );
 };

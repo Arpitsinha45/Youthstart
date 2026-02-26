@@ -49,38 +49,3 @@ export interface FundingNews {
   investor: string;
   amount: string;
 }
-
-export interface Startup {
-  id: string;
-  name: string;
-  description: string;
-  logo: string;
-  website: string;
-  founder: string;
-  category: string;
-  stage: string;
-  featured: boolean;
-  createdAt: string;
-  approved: boolean;
-}
-
-export interface Submission {
-  id: string;
-  startupName: string;
-  description: string;
-  founderName: string;
-  email: string;
-  website: string;
-  category: string;
-  status: 'pending' | 'approved' | 'rejected';
-  submittedAt: string;
-}
-
-export interface MediaItem {
-  id: string;
-  name: string;
-  url: string;
-  type: string;
-  size: number;
-  createdAt: string;
-}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Story } from '../types';
+import { LATEST_STORIES } from '../constants';
 import { ArrowRight, Clock } from 'lucide-react';
 import { motion } from 'motion/react';
 import { CategoryCardSkeleton, Skeleton } from './Skeleton';
@@ -9,13 +10,12 @@ interface CategoryPageProps {
   onStoryClick: (story: Story) => void;
   isLoading?: boolean;
   searchQuery?: string;
-  stories: Story[];
 }
 
-const CategoryPage: React.FC<CategoryPageProps> = ({ category, onStoryClick, isLoading, searchQuery, stories }) => {
+const CategoryPage: React.FC<CategoryPageProps> = ({ category, onStoryClick, isLoading, searchQuery }) => {
   const isSearch = category === 'Search Results';
   
-  const filteredStories = stories.filter(story => {
+  const filteredStories = LATEST_STORIES.filter(story => {
     if (isSearch && searchQuery) {
       const query = searchQuery.toLowerCase();
       return (

@@ -15,101 +15,58 @@ const ArticleGrid: React.FC<ArticleGridProps> = ({ onStoryClick, isLoading, stor
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-px bg-white/10 border-y border-white/10">
-        {/* Main Feature Skeleton */}
-        <div className="md:col-span-2 lg:col-span-8 lg:row-span-2 bg-black p-6 md:p-12 flex flex-col justify-end min-h-[400px] lg:min-h-[600px] relative">
-           <div className="w-full max-w-4xl">
-             <div className="flex items-center gap-3 mb-6">
-               <Skeleton className="w-8 h-px" />
-               <Skeleton className="h-3 w-24" />
-             </div>
-             <Skeleton className="h-10 md:h-16 w-3/4 mb-4" />
-             <Skeleton className="h-10 md:h-16 w-1/2 mb-6" />
-             <Skeleton className="h-4 w-full max-w-2xl mb-2" />
-             <Skeleton className="h-4 w-2/3 max-w-xl mb-6" />
-             <div className="flex items-center gap-4">
-               <Skeleton className="h-3 w-20" />
-               <Skeleton className="h-3 w-24" />
-             </div>
-           </div>
+        <div className="lg:col-span-8 lg:row-span-2 bg-black p-8 md:p-12 flex flex-col justify-end min-h-[400px] lg:min-h-[600px]">
+          <Skeleton className="h-4 w-24 mb-4" />
+          <Skeleton className="h-10 md:h-14 w-3/4 mb-4" />
+          <Skeleton className="h-10 md:h-14 w-1/2 mb-6" />
+          <Skeleton className="h-4 w-full max-w-2xl" />
+          <Skeleton className="h-4 w-2/3 max-w-xl mt-2" />
         </div>
-
-        {/* Top Right Skeleton */}
-        <div className="md:col-span-1 lg:col-span-4 bg-black p-8 md:p-10 flex flex-col justify-center min-h-[250px]">
+        <div className="lg:col-span-4 bg-black p-8 flex flex-col justify-center min-h-[250px]">
           <Skeleton className="h-3 w-20 mb-4" />
           <Skeleton className="h-8 w-full mb-2" />
-          <Skeleton className="h-8 w-4/5 mb-6" />
+          <Skeleton className="h-8 w-4/5 mb-4" />
           <Skeleton className="h-3 w-32" />
         </div>
-
-        {/* Middle Right Skeleton */}
-        <div className="md:col-span-1 lg:col-span-4 bg-black p-8 md:p-10 flex flex-col justify-center min-h-[250px]">
+        <div className="lg:col-span-4 bg-black p-8 flex flex-col justify-center min-h-[250px]">
           <Skeleton className="h-3 w-20 mb-4" />
           <Skeleton className="h-8 w-full mb-2" />
-          <Skeleton className="h-8 w-4/5 mb-6" />
+          <Skeleton className="h-8 w-4/5 mb-4" />
           <Skeleton className="h-3 w-32" />
         </div>
-
-        {/* Trending Skeleton */}
-        <div className="col-span-1 md:col-span-2 lg:col-span-4 bg-black p-8 md:p-10">
-          <div className="flex items-center gap-3 mb-8">
-             <Skeleton className="w-8 h-8 rounded-full" />
-             <Skeleton className="h-4 w-40" />
-          </div>
+        <div className="lg:col-span-4 bg-black p-8">
+          <Skeleton className="h-6 w-40 mb-8" />
           <div className="space-y-6">
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className="flex items-center justify-between">
-                <div className="flex items-center gap-4 w-full">
-                  <Skeleton className="w-4 h-4" />
-                  <div className="space-y-2 flex-1">
-                    <Skeleton className="h-4 w-3/4" />
-                    <Skeleton className="h-3 w-1/2" />
-                  </div>
-                </div>
-                <Skeleton className="h-5 w-12 rounded" />
-              </div>
-            ))}
+            {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-10 w-full" />)}
           </div>
         </div>
-
-        {/* Bottom Middle Skeleton */}
-        <div className="md:col-span-1 lg:col-span-4 bg-black flex flex-col">
-          <Skeleton className="h-48 md:h-56 w-full rounded-none" />
-          <div className="p-8 flex flex-col flex-grow justify-between">
-            <div>
-              <Skeleton className="h-3 w-20 mb-4" />
-              <Skeleton className="h-6 w-full mb-2" />
-              <Skeleton className="h-6 w-4/5 mb-4" />
-            </div>
+        <div className="lg:col-span-4 bg-black flex flex-col">
+          <Skeleton className="h-48 w-full rounded-none" />
+          <div className="p-8">
+            <Skeleton className="h-3 w-20 mb-4" />
+            <Skeleton className="h-6 w-full mb-2" />
+            <Skeleton className="h-6 w-4/5 mb-4" />
             <Skeleton className="h-4 w-full" />
           </div>
         </div>
-
-        {/* Bottom Right Skeleton */}
-        <div className="md:col-span-1 lg:col-span-4 bg-black flex flex-col">
-          <Skeleton className="h-48 md:h-56 w-full rounded-none" />
-          <div className="p-8 flex flex-col flex-grow justify-between">
-            <div>
-              <Skeleton className="h-3 w-20 mb-4" />
-              <Skeleton className="h-6 w-full mb-2" />
-              <Skeleton className="h-6 w-4/5 mb-4" />
-            </div>
+        <div className="lg:col-span-4 bg-black flex flex-col">
+          <Skeleton className="h-48 w-full rounded-none" />
+          <div className="p-8">
+            <Skeleton className="h-3 w-20 mb-4" />
+            <Skeleton className="h-6 w-full mb-2" />
+            <Skeleton className="h-6 w-4/5 mb-4" />
             <Skeleton className="h-4 w-full" />
           </div>
         </div>
-
-        {/* Row 4 Skeletons */}
         {[1, 2, 3, 4].map(i => (
-          <div key={i} className="md:col-span-1 lg:col-span-3 bg-black p-6 md:p-8 flex flex-col justify-between min-h-[250px]">
+          <div key={i} className="lg:col-span-3 bg-black p-6 flex flex-col justify-between min-h-[250px]">
             <div>
               <Skeleton className="h-3 w-16 mb-4" />
               <Skeleton className="h-5 w-full mb-2" />
               <Skeleton className="h-5 w-4/5 mb-4" />
               <Skeleton className="h-3 w-full" />
             </div>
-            <div className="flex items-center justify-between mt-8 pt-4 border-t border-white/10">
-              <Skeleton className="h-3 w-16" />
-              <Skeleton className="h-3 w-3" />
-            </div>
+            <Skeleton className="h-3 w-24 mt-6" />
           </div>
         ))}
       </div>
@@ -126,8 +83,6 @@ const ArticleGrid: React.FC<ArticleGridProps> = ({ onStoryClick, isLoading, stor
   const story2 = getStory(2);
   const story3 = getStory(3);
   const story4 = getStory(4);
-
-  if (!story0) return null; // Or some empty state
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-px bg-white/10 border-y border-white/10">

@@ -6,8 +6,6 @@ import { AdminDashboard } from './admin/AdminDashboard';
 import { PostEditor } from './admin/PostEditor';
 import { PageBuilder } from './admin/PageBuilder';
 import { StartupManager } from './admin/StartupManager';
-import { SubmissionsManager } from './admin/SubmissionsManager';
-import { MediaManager } from './admin/MediaManager';
 import { MonetizationManager } from './admin/MonetizationManager';
 import { NewsletterManager } from './admin/NewsletterManager';
 import { AppearanceSettings } from './admin/AppearanceSettings';
@@ -32,8 +30,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ onBack, stories, setStories }) =>
       case 'posts': return <PostEditor stories={stories} setStories={setStories} />;
       case 'pages': return <PageBuilder />;
       case 'startups': return <StartupManager />;
-      case 'submissions': return <SubmissionsManager />;
-      case 'media': return <MediaManager />;
       case 'monetization': return <MonetizationManager />;
       case 'newsletter': return <NewsletterManager />;
       case 'appearance': return <AppearanceSettings />;
