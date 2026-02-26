@@ -1,13 +1,15 @@
-import { supabase } from './supabase';
+import { getSupabaseClient } from './supabase';
 import { Story, Startup, Submission, MediaItem } from '../types';
 import { Post } from './api';
 
 // --- Dashboard Stats ---
 export async function getDashboardStats() {
+  const supabase = getSupabaseClient();
+  if (!supabase) return { posts: 0, startups: 0, submissions: 0, featuredStartups: 0 };
+
   try {
     const { count: postsCount } = await supabase.from('posts').select('*', { count: 'exact', head: true });
     
-    // Check if startups table exists by trying to select
     let startupsCount = 0;
     let featuredStartupsCount = 0;
     try {
@@ -20,7 +22,6 @@ export async function getDashboardStats() {
       console.warn('Startups table might not exist yet');
     }
 
-    // Check if submissions table exists
     let submissionsCount = 0;
     try {
       const { count } = await supabase.from('submissions').select('*', { count: 'exact', head: true }).eq('status', 'pending');
@@ -48,6 +49,9 @@ export async function getDashboardStats() {
 
 // --- Posts Management ---
 export async function createPost(post: Omit<Story, 'id' | 'publishedAt' | 'readTime'>) {
+  const supabase = getSupabaseClient();
+  if (!supabase) throw new Error("Supabase client is not available");
+
   const { data, error } = await supabase
     .from('posts')
     .insert([{
@@ -69,6 +73,9 @@ export async function createPost(post: Omit<Story, 'id' | 'publishedAt' | 'readT
 }
 
 export async function updatePost(id: string, post: Partial<Story>) {
+  const supabase = getSupabaseClient();
+  if (!supabase) throw new Error("Supabase client is not available");
+
   const updates: any = {};
   if (post.title) updates.title = post.title;
   if (post.slug) updates.slug = post.slug;
@@ -91,12 +98,18 @@ export async function updatePost(id: string, post: Partial<Story>) {
 }
 
 export async function deletePost(id: string) {
+  const supabase = getSupabaseClient();
+  if (!supabase) throw new Error("Supabase client is not available");
+
   const { error } = await supabase.from('posts').delete().eq('id', id);
   if (error) throw error;
 }
 
 // --- Startups Management ---
 export async function getStartups(): Promise<Startup[]> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return [];
+
   try {
     const { data, error } = await supabase
       .from('startups')
@@ -129,6 +142,9 @@ export async function getStartups(): Promise<Startup[]> {
 }
 
 export async function updateStartup(id: string, updates: Partial<Startup>) {
+  const supabase = getSupabaseClient();
+  if (!supabase) throw new Error("Supabase client is not available");
+
   const dbUpdates: any = {};
   if (updates.name) dbUpdates.name = updates.name;
   if (updates.description) dbUpdates.description = updates.description;
@@ -152,12 +168,18 @@ export async function updateStartup(id: string, updates: Partial<Startup>) {
 }
 
 export async function deleteStartup(id: string) {
+  const supabase = getSupabaseClient();
+  if (!supabase) throw new Error("Supabase client is not available");
+
   const { error } = await supabase.from('startups').delete().eq('id', id);
   if (error) throw error;
 }
 
 // --- Submissions Management ---
 export async function getSubmissions(): Promise<Submission[]> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return [];
+
   try {
     const { data, error } = await supabase
       .from('submissions')
@@ -187,6 +209,9 @@ export async function getSubmissions(): Promise<Submission[]> {
 }
 
 export async function updateSubmissionStatus(id: string, status: 'approved' | 'rejected') {
+  const supabase = getSupabaseClient();
+  if (!supabase) throw new Error("Supabase client is not available");
+
   const { data, error } = await supabase
     .from('submissions')
     .update({ status })
@@ -199,6 +224,9 @@ export async function updateSubmissionStatus(id: string, status: 'approved' | 'r
 }
 
 export async function approveSubmission(submission: Submission) {
+  const supabase = getSupabaseClient();
+  if (!supabase) throw new Error("Supabase client is not available");
+
   // 1. Update submission status
   await updateSubmissionStatus(submission.id, 'approved');
 
@@ -224,6 +252,9 @@ export async function approveSubmission(submission: Submission) {
 
 // --- Media Management ---
 export async function uploadImage(file: File): Promise<string> {
+  const supabase = getSupabaseClient();
+  if (!supabase) throw new Error("Supabase client is not available");
+
   try {
     const fileExt = file.name.split('.').pop();
     const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
@@ -246,6 +277,9 @@ export async function uploadImage(file: File): Promise<string> {
 }
 
 export async function getImages(): Promise<MediaItem[]> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return [];
+
   try {
     const { data, error } = await supabase.storage.from('images').list('', {
       limit: 100,

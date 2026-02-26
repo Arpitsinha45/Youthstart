@@ -1,11 +1,19 @@
-/// <reference types="vite/client" />
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+let supabase: SupabaseClient | null = null;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Missing Supabase environment variables');
+export function getSupabaseClient(): SupabaseClient | null {
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+  // Only initialize if we have the keys and the client doesn't exist yet
+  if (supabaseUrl && supabaseAnonKey && !supabase) {
+    supabase = createClient(supabaseUrl, supabaseAnonKey);
+  }
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.warn('Supabase environment variables are not set. Database features will be disabled.');
+  }
+
+  return supabase;
 }
-
-export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');

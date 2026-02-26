@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { getSupabaseClient } from './supabase';
 import { Story } from '../types';
 
 export interface Post {
@@ -16,6 +16,9 @@ export interface Post {
 }
 
 export async function getPosts(): Promise<Story[]> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return []; // Fallback if Supabase is not configured
+
   const { data, error } = await supabase
     .from('posts')
     .select('*')
@@ -30,6 +33,9 @@ export async function getPosts(): Promise<Story[]> {
 }
 
 export async function getPostBySlug(slug: string): Promise<Story | null> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return null;
+
   const { data, error } = await supabase
     .from('posts')
     .select('*')
@@ -45,6 +51,9 @@ export async function getPostBySlug(slug: string): Promise<Story | null> {
 }
 
 export async function getFeaturedPosts(): Promise<Story[]> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return [];
+
   const { data, error } = await supabase
     .from('posts')
     .select('*')
