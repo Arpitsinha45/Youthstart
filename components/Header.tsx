@@ -48,7 +48,7 @@ const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, o
   };
 
   return (
-    <header className={`fixed top-0 right-0 h-16 border-b border-brand-border bg-black/80 backdrop-blur-md z-40 flex items-center px-4 md:px-8 lg:px-12 transition-all duration-500 ${isSidebarMinimized ? 'left-0 lg:left-20' : 'left-0 lg:left-64'}`}>
+    <header className={`fixed top-0 right-0 h-16 border-b md:border-b-0 border-brand-border bg-black/80 backdrop-blur-md z-40 flex items-center px-4 md:px-8 lg:px-12 transition-all duration-500 ${isSidebarMinimized ? 'left-0 lg:left-20' : 'left-0 lg:left-64'}`}>
       <div className="flex items-center justify-between w-full relative">
         
         {/* Search Bar Overlay */}
