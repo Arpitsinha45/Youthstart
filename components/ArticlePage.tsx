@@ -69,9 +69,9 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ story: initialStory, onBack, 
     );
   }
 
-  const author = AUTHORS.find(a => a.id === story.authorId) || {
+  const author = AUTHORS.find(a => a.id === story?.authorId) || {
     id: 'youthstartup',
-    name: story.author || 'YouthStartup Team',
+    name: story?.author || 'YouthStartup Team',
     role: 'Editor',
     avatar: 'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?auto=format&fit=crop&q=80&w=100',
     bio: 'Bringing you the latest stories from the startup world.',
@@ -82,11 +82,11 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ story: initialStory, onBack, 
     }
   };
 
-  const otherArticles = LATEST_STORIES.filter(s => s.authorId === story.authorId && s.id !== story.id).slice(0, 3);
+  const otherArticles = (LATEST_STORIES || []).filter(s => s.authorId === story?.authorId && s.id !== story?.id).slice(0, 3);
   
-  const relatedArticles = LATEST_STORIES.filter(s => s.id !== story.id && s.category === story.category).slice(0, 3);
+  const relatedArticles = (LATEST_STORIES || []).filter(s => s.id !== story?.id && s.category === story?.category).slice(0, 3);
   if (relatedArticles.length < 3) {
-    const additionalArticles = LATEST_STORIES.filter(s => s.id !== story.id && s.category !== story.category).slice(0, 3 - relatedArticles.length);
+    const additionalArticles = (LATEST_STORIES || []).filter(s => s.id !== story?.id && s.category !== story?.category).slice(0, 3 - relatedArticles.length);
     relatedArticles.push(...additionalArticles);
   }
 
@@ -146,7 +146,7 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ story: initialStory, onBack, 
             transition={{ delay: 0.1 }}
             className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-6"
           >
-            {story.category}
+            {story?.category}
           </motion.div>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
@@ -154,7 +154,7 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ story: initialStory, onBack, 
             transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
             className="text-4xl md:text-6xl lg:text-7xl font-bold serif-title leading-[1.1] mb-10 tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400"
           >
-            {story.title}
+            {story?.title}
           </motion.h1>
           
           <motion.div 
@@ -165,26 +165,26 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ story: initialStory, onBack, 
           >
             <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-white">
               <User className="w-4 h-4 text-emerald-500" />
-              {story.authorId ? (
+              {story?.authorId ? (
                 <button onClick={() => onAuthorClick(story.authorId!)} className="hover:text-emerald-400 transition-colors">
-                  <span>{author.name}</span>
+                  <span>{author?.name}</span>
                 </button>
               ) : (
-                <span>{story.author}</span>
+                <span>{story?.author}</span>
               )}
             </div>
             <div className="w-1 h-1 rounded-full bg-white/30 hidden md:block"></div>
             <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-gray-400">
               <Calendar className="w-4 h-4" />
-              <span>{story.publishedAt}</span>
+              <span>{story?.publishedAt}</span>
             </div>
             <div className="w-1 h-1 rounded-full bg-white/30 hidden md:block"></div>
             <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-gray-400">
               <Clock className="w-4 h-4" />
-              <span>{story.readTime} Read</span>
+              <span>{story?.readTime} Read</span>
             </div>
             <div className="hidden md:block w-px h-4 bg-white/10 mx-2"></div>
-            <SocialShare title={story.title} />
+            <SocialShare title={story?.title || ''} />
           </motion.div>
         </header>
 
@@ -196,15 +196,15 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ story: initialStory, onBack, 
         >
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10"></div>
           <img 
-            src={story.featuredImage} 
-            alt={story.title} 
+            src={story?.featuredImage} 
+            alt={story?.title} 
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
           />
         </motion.div>
 
         <div className="max-w-[680px] mx-auto">
-          {story.excerpt && (
+          {story?.excerpt && (
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -231,7 +231,7 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ story: initialStory, onBack, 
               font-sans"
           >
             {/* Render content safely - in a real app use a markdown parser */}
-            <div dangerouslySetInnerHTML={{ __html: story.content }} />
+            <div dangerouslySetInnerHTML={{ __html: story?.content || '' }} />
           </motion.div>
 
           {/* Author Section */}
@@ -307,7 +307,7 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ story: initialStory, onBack, 
             className="mt-24 pt-12 border-t border-brand-border flex flex-col items-center"
           >
             <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] mb-8 text-gray-600">Share this insight</h4>
-            <SocialShare title={story.title} className="mb-16" />
+            <SocialShare title={story?.title || ''} className="mb-16" />
             
             <div className="bg-white/5 border border-brand-border w-full p-10 text-center rounded-2xl backdrop-blur-sm">
               <h5 className="text-2xl font-bold serif-title mb-4">Support Independent Startup Journalism</h5>

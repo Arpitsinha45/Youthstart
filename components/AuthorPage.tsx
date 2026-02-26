@@ -17,7 +17,7 @@ const AuthorPage: React.FC<AuthorPageProps> = ({ authorId, onBack, onStoryClick,
   }, [authorId]);
 
   const author = AUTHORS.find(a => a.id === authorId);
-  const authorStories = stories.filter(story => story.authorId === authorId);
+  const authorStories = (stories || []).filter(story => story?.authorId === authorId);
 
   if (!author) {
     return (

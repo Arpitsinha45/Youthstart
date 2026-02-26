@@ -116,7 +116,7 @@ const ArticleGrid: React.FC<ArticleGridProps> = ({ onStoryClick, isLoading, stor
     );
   }
 
-  const publishedStories = stories.filter(s => s.published);
+  const publishedStories = (stories || []).filter(s => s.published);
   
   // Ensure we have enough stories to display, fallback to the first one if not enough
   const getStory = (index: number) => publishedStories[index] || publishedStories[0];
@@ -127,7 +127,13 @@ const ArticleGrid: React.FC<ArticleGridProps> = ({ onStoryClick, isLoading, stor
   const story3 = getStory(3);
   const story4 = getStory(4);
 
-  if (!story0) return null; // Or some empty state
+  if (!story0 && !isLoading) {
+    return (
+      <div className="py-20 text-center border-y border-white/10 bg-black">
+        <p className="text-gray-500 uppercase tracking-widest text-xs font-bold">No articles found.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-px bg-white/10 border-y border-white/10">

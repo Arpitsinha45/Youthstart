@@ -26,6 +26,18 @@ const AdminPage: React.FC<AdminPageProps> = ({ onBack, stories, setStories }) =>
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-8">
+        <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
+        <p className="text-gray-400 mb-8">Please sign in to access the admin panel.</p>
+        <button onClick={onBack} className="bg-white text-black px-8 py-3 rounded-full font-bold uppercase tracking-widest text-xs">
+          Back to Home
+        </button>
+      </div>
+    );
+  }
+
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard': return <AdminDashboard />;

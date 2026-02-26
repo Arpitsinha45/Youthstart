@@ -24,7 +24,7 @@ import ConfigError from './components/ConfigError';
 
 const AppContent: React.FC = () => {
   const { user, loading, signIn } = useAuth();
-  const [stories, setStories] = useState<Story[]>(LATEST_STORIES);
+  const [stories, setStories] = useState<Story[]>(LATEST_STORIES || []);
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedAuthorId, setSelectedAuthorId] = useState<string | null>(null);
@@ -71,15 +71,15 @@ const AppContent: React.FC = () => {
       setIsLoading(true);
       try {
         const fetchedStories = await getPosts();
-        if (fetchedStories.length > 0) {
+        if (fetchedStories && fetchedStories.length > 0) {
           setStories(fetchedStories);
         } else {
           // Fallback to static data if Supabase is empty or fails
-          setStories(LATEST_STORIES);
+          setStories(LATEST_STORIES || []);
         }
       } catch (error) {
         console.error("Failed to fetch stories", error);
-        setStories(LATEST_STORIES);
+        setStories(LATEST_STORIES || []);
       } finally {
         setIsLoading(false);
       }

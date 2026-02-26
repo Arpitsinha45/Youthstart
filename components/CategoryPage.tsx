@@ -15,18 +15,19 @@ interface CategoryPageProps {
 const CategoryPage: React.FC<CategoryPageProps> = ({ category, onStoryClick, isLoading, searchQuery, stories }) => {
   const isSearch = category === 'Search Results';
   
-  const filteredStories = stories.filter(story => {
+  const filteredStories = (stories || []).filter(story => {
+    if (!story) return false;
     if (isSearch && searchQuery) {
       const query = searchQuery.toLowerCase();
       return (
-        story.title.toLowerCase().includes(query) ||
-        story.excerpt.toLowerCase().includes(query) ||
-        story.category.toLowerCase().includes(query) ||
-        story.author.toLowerCase().includes(query)
+        story.title?.toLowerCase().includes(query) ||
+        story.excerpt?.toLowerCase().includes(query) ||
+        story.category?.toLowerCase().includes(query) ||
+        story.author?.toLowerCase().includes(query)
       );
     }
     
-    return story.category.toLowerCase() === category.toLowerCase() || 
+    return story.category?.toLowerCase() === category.toLowerCase() || 
            category === 'Trending' || 
            category === 'News';
   });

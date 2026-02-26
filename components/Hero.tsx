@@ -9,7 +9,7 @@ interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({ onStoryClick, stories }) => {
-  const featuredStories = stories.filter(s => s.featured);
+  const featuredStories = (stories || []).filter(s => s?.featured);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -25,6 +25,7 @@ const Hero: React.FC<HeroProps> = ({ onStoryClick, stories }) => {
   if (featuredStories.length === 0) return null;
   
   const currentStory = featuredStories[currentIndex];
+  if (!currentStory) return null;
 
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % featuredStories.length);
