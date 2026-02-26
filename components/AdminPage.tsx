@@ -16,17 +16,17 @@ import { ThemeCustomizer } from './admin/ThemeCustomizer';
 import { UserManagement } from './admin/UserManagement';
 import { SiteSettings } from './admin/SiteSettings';
 import { MediaManager } from './admin/MediaManager';
-import { Story } from '../types';
+import { Post } from '../src/types/admin';
 import { useAuth } from '../lib/AuthContext';
 
 interface AdminPageProps {
   onBack: () => void;
-  stories: Story[];
-  setStories: React.Dispatch<React.SetStateAction<Story[]>>;
+  posts: Post[];
+  setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
   hasAIKey: boolean;
 }
 
-const AdminPage: React.FC<AdminPageProps> = ({ onBack, stories, setStories, hasAIKey }) => {
+const AdminPage: React.FC<AdminPageProps> = ({ onBack, posts, setPosts, hasAIKey }) => {
   const { user, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -46,7 +46,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onBack, stories, setStories, hasA
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard': return <AdminDashboard />;
-      case 'posts': return <PostEditor stories={stories} setStories={setStories} hasAIKey={hasAIKey} />;
+      case 'posts': return <PostEditor posts={posts} setPosts={setPosts} hasAIKey={hasAIKey} />;
       case 'pages': return <PageBuilder />;
       case 'media': return <MediaManager />;
       case 'featured': return <FeaturedContentManager />;

@@ -31,14 +31,37 @@ export interface Post {
   slug: string;
   content: string;
   excerpt?: string;
-  featured_image?: string;
+  cover_image?: string;
   category_id?: string;
-  author_id: string;
-  is_featured: boolean;
   status: 'draft' | 'published' | 'scheduled';
-  published_at?: string;
-  seo_title?: string;
-  seo_description?: string;
-  og_image?: string;
-  tags?: string[]; // Array of tag IDs or names
+  featured: boolean;
+  author_id: string;
+}
+
+export interface Page {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;
+  status: 'draft' | 'published';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Navigation {
+  id: string;
+  links: { label: string; url: string }[];
+  updated_at: string;
+}
+
+export interface Footer {
+  id: string;
+  content: any;
+  updated_at: string;
+}
+
+export interface FeaturedContent {
+  id: string;
+  post_ids: string[];
+  updated_at: string;
 }

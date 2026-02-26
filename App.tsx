@@ -199,7 +199,7 @@ const AppContent: React.FC = () => {
         <AdminPage onBack={() => {
           window.history.pushState({}, '', '/');
           setCurrentView('home');
-        }} stories={stories} setStories={setStories} hasAIKey={hasAIKey} />
+        }} posts={stories as any} setPosts={setStories as any} hasAIKey={hasAIKey} />
       </ProtectedRoute>
     );
   }
@@ -218,6 +218,7 @@ const AppContent: React.FC = () => {
           isMinimized={isSidebarMinimized}
           selectedCategory={selectedCategory}
           signIn={signIn}
+          hasAIKey={hasAIKey}
         />
       </div>
 

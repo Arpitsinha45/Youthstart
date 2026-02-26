@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Users, FileText, Eye, TrendingUp, Briefcase, Send } from 'lucide-react';
-import { getDashboardStats } from '../../lib/adminApi';
+import { getDashboardStats } from '@/lib/adminApi';
 
 export const AdminDashboard = () => {
   const [stats, setStats] = useState({

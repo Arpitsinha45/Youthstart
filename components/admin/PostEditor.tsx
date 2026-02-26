@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Image as ImageIcon, Sparkles, Star, Loader2, Save, X } from 'lucide-react';
 import { Post, Author, Category } from '../../src/types/admin';
 import { generateArticleImage } from '../../lib/geminiService';
 import AIFeatureWrapper from '../AIFeatureWrapper';
-import { createPost, updatePost, deletePost, uploadImage, getPosts } from '../../lib/adminApi';
+import { createPost, updatePost, deletePost, uploadImage, getAdminPosts } from '@/lib/adminApi';
 
 interface PostEditorProps {
   posts: Post[];
@@ -21,10 +21,10 @@ export const PostEditor: React.FC<PostEditorProps> = ({ posts: initialPosts, set
   const [slug, setSlug] = useState('');
   const [content, setContent] = useState('');
   const [excerpt, setExcerpt] = useState('');
-  const [featuredImage, setFeaturedImage] = useState<string | null>(null);
+  const [coverImage, setCoverImage] = useState<string | null>(null);
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [authorId, setAuthorId] = useState<string | null>(null);
-  const [isFeatured, setIsFeatured] = useState(false);
+  const [featured, setFeatured] = useState(false);
   const [status, setStatus] = useState<'draft' | 'published' | 'scheduled'>('draft');
   const [seoTitle, setSeoTitle] = useState('');
   const [seoDescription, setSeoDescription] = useState('');
@@ -43,7 +43,7 @@ export const PostEditor: React.FC<PostEditorProps> = ({ posts: initialPosts, set
   const fetchPosts = async () => {
     setLoadingPosts(true);
     try {
-      const fetchedPosts = await getPosts();
+      const fetchedPosts = await getAdminPosts();
       setLocalPosts(fetchedPosts);
       setPosts(fetchedPosts); // Update parent state
     } catch (error) {
@@ -58,10 +58,10 @@ export const PostEditor: React.FC<PostEditorProps> = ({ posts: initialPosts, set
     setSlug('');
     setContent('');
     setExcerpt('');
-    setFeaturedImage(null);
+    setCoverImage(null);
     setCategoryId(null);
     setAuthorId(null);
-    setIsFeatured(false);
+    setFeatured(false);
     setStatus('draft');
     setSeoTitle('');
     setSeoDescription('');
@@ -76,15 +76,11 @@ export const PostEditor: React.FC<PostEditorProps> = ({ posts: initialPosts, set
     setSlug(post.slug);
     setContent(post.content);
     setExcerpt(post.excerpt || '');
-    setFeaturedImage(post.featured_image || null);
+    setCoverImage(post.cover_image || null);
     setCategoryId(post.category_id || null);
     setAuthorId(post.author_id || null);
-    setIsFeatured(post.is_featured);
+    setFeatured(post.featured);
     setStatus(post.status);
-    setSeoTitle(post.seo_title || '');
-    setSeoDescription(post.seo_description || '');
-    setOgImage(post.og_image || null);
-    setTags(post.tags || []);
     setEditingId(post.id);
     setIsEditing(true);
   };
@@ -111,7 +107,7 @@ export const PostEditor: React.FC<PostEditorProps> = ({ posts: initialPosts, set
     setIsUploading(true);
     try {
       const url = await uploadImage(file);
-      setFeaturedImage(url);
+      setCoverImage(url);
     } catch (error) {
       console.error("Failed to upload image", error);
       alert("Failed to upload image");
@@ -133,7 +129,7 @@ export const PostEditor: React.FC<PostEditorProps> = ({ posts: initialPosts, set
       const file = new File([blob], `generated-${Date.now()}.png`, { type: 'image/png' });
       
       const uploadedUrl = await uploadImage(file);
-      setFeaturedImage(uploadedUrl);
+      setCoverImage(uploadedUrl);
     } catch (error) {
       console.error("Failed to generate image", error);
       alert("Failed to generate image");
@@ -155,22 +151,30 @@ export const PostEditor: React.FC<PostEditorProps> = ({ posts: initialPosts, set
         slug: slug || generateSlug(title),
         content,
         excerpt,
-        featured_image: featuredImage,
+        cover_image: coverImage || undefined,
         category_id: categoryId,
         author_id: authorId,
-        is_featured: isFeatured,
+        featured,
         status,
-        seo_title: seoTitle,
-        seo_description: seoDescription,
-        og_image: ogImage,
-        tags,
       };
 
       if (editingId) {
         await updatePost(editingId, postData);
         fetchPosts(); // Refetch to get updated data
       } else {
-        await createPost(postData);
+        // Ensure all required fields are present for createPost
+        const newPostData: Omit<Post, 'id' | 'created_at' | 'updated_at'> = {
+          title: postData.title || '',
+          slug: postData.slug || '',
+          content: postData.content || '',
+          status: postData.status || 'draft',
+          featured: postData.featured || false,
+          author_id: postData.author_id || '',
+          excerpt: postData.excerpt,
+          cover_image: postData.cover_image,
+          category_id: postData.category_id,
+        };
+        await createPost(newPostData);
         fetchPosts(); // Refetch to get new post
       }
       resetForm();
@@ -195,7 +199,7 @@ export const PostEditor: React.FC<PostEditorProps> = ({ posts: initialPosts, set
 
   const toggleFeatured = async (id: string, currentFeatured: boolean) => {
     try {
-      await updatePost(id, { is_featured: !currentFeatured });
+      await updatePost(id, { featured: !currentFeatured });
       fetchPosts(); // Refetch to update list
     } catch (error) {
       console.error("Failed to toggle featured", error);
@@ -235,11 +239,11 @@ export const PostEditor: React.FC<PostEditorProps> = ({ posts: initialPosts, set
             />
             
             <div className="relative group">
-              {featuredImage ? (
+              {coverImage ? (
                 <div className="relative w-full h-64 rounded-2xl overflow-hidden">
-                  <img src={featuredImage} alt="Cover" className="w-full h-full object-cover" />
+                  <img src={coverImage} alt="Cover" className="w-full h-full object-cover" />
                   <button 
-                    onClick={() => setFeaturedImage(null)}
+                    onClick={() => setCoverImage(null)}
                     className="absolute top-2 right-2 p-2 bg-black/50 rounded-full text-white hover:bg-red-500/80 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -257,7 +261,7 @@ export const PostEditor: React.FC<PostEditorProps> = ({ posts: initialPosts, set
                 </label>
               )}
               
-              {!featuredImage && (
+              {!coverImage && (
                 <AIFeatureWrapper hasAIKey={hasAIKey} fallbackMessage="AI image generation unavailable">
                   <button 
                     onClick={handleGenerateImage}
@@ -313,15 +317,16 @@ export const PostEditor: React.FC<PostEditorProps> = ({ posts: initialPosts, set
               <div>
                 <label className="block text-xs text-gray-500 mb-1">Category</label>
                 <select 
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
+                  value={categoryId || ''}
+                  onChange={(e) => setCategoryId(e.target.value)}
                   className="w-full bg-black border border-white/10 rounded-lg p-2 text-sm focus:outline-none focus:border-white/30"
                 >
-                  <option>Founder Stories</option>
-                  <option>AI Tools</option>
-                  <option>Funding</option>
-                  <option>News</option>
-                  <option>Trending</option>
+                  <option value="">Select Category</option>
+                  <option value="founder-stories">Founder Stories</option>
+                  <option value="ai-tools">AI Tools</option>
+                  <option value="funding">Funding</option>
+                  <option value="news">News</option>
+                  <option value="trending">Trending</option>
                 </select>
               </div>
 
@@ -329,8 +334,8 @@ export const PostEditor: React.FC<PostEditorProps> = ({ posts: initialPosts, set
                 <label className="block text-xs text-gray-500 mb-1">Author</label>
                 <input 
                   type="text" 
-                  value={author}
-                  onChange={(e) => setAuthor(e.target.value)}
+                  value={authorId || ''}
+                  onChange={(e) => setAuthorId(e.target.value)}
                   className="w-full bg-black border border-white/10 rounded-lg p-2 text-sm focus:outline-none focus:border-white/30" 
                 />
               </div>
@@ -380,8 +385,8 @@ export const PostEditor: React.FC<PostEditorProps> = ({ posts: initialPosts, set
             </tr>
           </thead>
           <tbody className="divide-y divide-white/10">
-            {(stories || []).map((story) => (
-              <tr key={story?.id} className="hover:bg-white/5 transition-colors">
+            {(posts || []).map((post) => (
+              <tr key={post.id} className="hover:bg-white/5 transition-colors">
                 <td className="p-4 font-medium text-white max-w-[200px] truncate" title={post.title}>{post.title}</td>
                 <td className="p-4 text-gray-400">{post.author_id}</td> {/* TODO: Resolve author name */}
                 <td className="p-4"><span className="px-2 py-1 bg-white/10 rounded text-xs">{post.category_id}</span></td> {/* TODO: Resolve category name */}
@@ -392,11 +397,11 @@ export const PostEditor: React.FC<PostEditorProps> = ({ posts: initialPosts, set
                 }`}>{post.status}</span></td>
                 <td className="p-4">
                   <button 
-                    onClick={() => toggleFeatured(post.id, post.is_featured)}
-                    className={`p-1.5 rounded-full transition-colors ${post.is_featured ? 'bg-amber-500/20 text-amber-400' : 'bg-white/5 text-gray-500 hover:text-white'}`}
-                    title={post.is_featured ? "Remove from featured" : "Set as featured"}
+                    onClick={() => toggleFeatured(post.id, post.featured)}
+                    className={`p-1.5 rounded-full transition-colors ${post.featured ? 'bg-amber-500/20 text-amber-400' : 'bg-white/5 text-gray-500 hover:text-white'}`}
+                    title={post.featured ? "Remove from featured" : "Set as featured"}
                   >
-                    <Star className={`w-4 h-4 ${post.is_featured ? 'fill-current' : ''}`} />
+                    <Star className={`w-4 h-4 ${post.featured ? 'fill-current' : ''}`} />
                   </button>
                 </td>
                 <td className="p-4">

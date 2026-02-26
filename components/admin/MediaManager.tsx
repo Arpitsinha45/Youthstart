@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Upload, Trash2, Copy, Loader2 } from 'lucide-react';
-import { getImages, uploadImage } from '../../lib/adminApi';
+import { getImages, uploadImage } from '@/lib/adminApi';
 import { MediaItem } from '../../types';
 
 export const MediaManager = () => {
