@@ -1,10 +1,27 @@
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+let ai: GoogleGenAI | null = null;
 
-export async function generateArticleImage(prompt: string): Promise<string> {
+function getGeminiClient(): GoogleGenAI | null {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  
+  if (apiKey && !ai) {
+    ai = new GoogleGenAI({ apiKey });
+  }
+  
+  if (!apiKey) {
+    console.warn('Gemini API key is not set. Image generation will be disabled.');
+  }
+  
+  return ai;
+}
+
+export async function generateArticleImage(prompt: string): Promise<string | null> {
+  const gemini = getGeminiClient();
+  if (!gemini) return null; // Return null if the client isn't available
+
   try {
-    const response = await ai.models.generateContent({
+    const response = await gemini.models.generateContent({
       model: 'gemini-2.5-flash-image',
       contents: {
         parts: [
@@ -28,9 +45,10 @@ export async function generateArticleImage(prompt: string): Promise<string> {
         }
       }
     }
-    throw new Error("No image generated");
+    console.error("No image generated from Gemini API");
+    return null;
   } catch (error) {
     console.error("Error generating image:", error);
-    throw error;
+    return null; // Return null on error instead of throwing
   }
 }
