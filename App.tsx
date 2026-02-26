@@ -103,7 +103,7 @@ const AppContent: React.FC = () => {
 
     const handleNavigation = () => {
       const path = window.location.pathname;
-      if (path === '/admin' && user) {
+      if (path === '/admin') {
         setCurrentView('admin');
       } else if (path === '/about') {
         setCurrentView('about');

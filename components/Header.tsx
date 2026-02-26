@@ -154,6 +154,13 @@ const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, o
                     <p className="text-[9px] text-gray-500 truncate">{user?.email}</p>
                   </div>
                   <button 
+                    onClick={onAdminClick}
+                    className="w-full flex items-center gap-2 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/5 rounded transition-all"
+                  >
+                    <PlusCircle className="w-3 h-3" />
+                    Admin Dashboard
+                  </button>
+                  <button 
                     onClick={signOut}
                     className="w-full flex items-center gap-2 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/5 rounded transition-all"
                   >
