@@ -129,38 +129,40 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ story: initialStory, onBack, 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
-            className="flex flex-wrap items-center justify-center gap-6 md:gap-10 border-y border-white/10 py-6 bg-white/[0.02] rounded-2xl mb-8"
+            className="flex flex-wrap items-center justify-center gap-6 md:gap-8 py-6 border-y border-white/10 mb-12"
           >
             <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-white">
-              <User className="w-3 h-3 text-gray-500" />
+              <User className="w-4 h-4 text-emerald-500" />
               {story.authorId ? (
-                <button onClick={() => onAuthorClick(story.authorId!)} className="hover:text-gray-300 transition-colors">
+                <button onClick={() => onAuthorClick(story.authorId!)} className="hover:text-emerald-400 transition-colors">
                   <span>{author.name}</span>
                 </button>
               ) : (
                 <span>{story.author}</span>
               )}
             </div>
-            <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-gray-500">
-              <Calendar className="w-3 h-3" />
+            <div className="w-1 h-1 rounded-full bg-white/30 hidden md:block"></div>
+            <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-gray-400">
+              <Calendar className="w-4 h-4" />
               <span>{story.publishedAt}</span>
             </div>
-            <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-gray-500">
-              <Clock className="w-3 h-3" />
+            <div className="w-1 h-1 rounded-full bg-white/30 hidden md:block"></div>
+            <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-gray-400">
+              <Clock className="w-4 h-4" />
               <span>{story.readTime} Read</span>
             </div>
-            <div className="hidden md:block h-4 w-px bg-brand-border"></div>
+            <div className="hidden md:block w-px h-4 bg-white/10 mx-2"></div>
             <SocialShare title={story.title} />
           </motion.div>
         </header>
 
         <motion.div 
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          initial={{ opacity: 0, scale: 0.98, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
-          className="relative aspect-[16/9] w-full overflow-hidden mb-16 md:mb-24 border border-white/10 rounded-2xl shadow-2xl"
+          className="relative aspect-[21/9] w-full overflow-hidden mb-16 md:mb-20 rounded-2xl shadow-2xl ring-1 ring-white/10"
         >
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10"></div>
           <img 
             src={story.featuredImage} 
             alt={story.title} 
@@ -169,14 +171,14 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ story: initialStory, onBack, 
           />
         </motion.div>
 
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-[680px] mx-auto">
           {story.excerpt && (
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6 }}
-              className="text-xl md:text-3xl font-light italic leading-relaxed text-gray-200 mb-16 serif-title border-l-4 border-emerald-500/50 pl-8 py-2"
+              className="text-xl md:text-2xl font-serif italic leading-relaxed text-gray-200 mb-16 pl-6 border-l-2 border-emerald-500"
             >
               {story.excerpt}
             </motion.p>
@@ -187,7 +189,14 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ story: initialStory, onBack, 
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="prose prose-invert max-w-none prose-p:text-lg md:prose-p:text-[22px] prose-p:leading-[1.9] prose-p:text-gray-300 prose-p:mb-10 font-sans"
+            className="prose prose-invert prose-lg md:prose-xl max-w-none 
+              prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-white
+              prose-p:text-gray-300 prose-p:leading-8 prose-p:mb-8
+              prose-a:text-emerald-500 prose-a:no-underline hover:prose-a:underline
+              prose-blockquote:border-l-emerald-500 prose-blockquote:bg-white/5 prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
+              prose-strong:text-white prose-strong:font-semibold
+              prose-li:text-gray-300 prose-li:marker:text-emerald-500
+              font-sans"
           >
             {/* Render content safely - in a real app use a markdown parser */}
             <div dangerouslySetInnerHTML={{ __html: story.content }} />
