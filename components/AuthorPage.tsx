@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Author, Story } from '../types';
-import { AUTHORS, LATEST_STORIES } from '../constants';
+import { AUTHORS } from '../constants';
 import { ArrowLeft, Twitter, Linkedin, Globe as WebsiteIcon, ArrowRight, Clock } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -8,15 +8,16 @@ interface AuthorPageProps {
   authorId: string;
   onBack: () => void;
   onStoryClick: (story: Story) => void;
+  stories: Story[];
 }
 
-const AuthorPage: React.FC<AuthorPageProps> = ({ authorId, onBack, onStoryClick }) => {
+const AuthorPage: React.FC<AuthorPageProps> = ({ authorId, onBack, onStoryClick, stories }) => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [authorId]);
 
   const author = AUTHORS.find(a => a.id === authorId);
-  const authorStories = LATEST_STORIES.filter(story => story.authorId === authorId);
+  const authorStories = stories.filter(story => story.authorId === authorId);
 
   if (!author) {
     return (

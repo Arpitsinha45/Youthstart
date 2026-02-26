@@ -25,7 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCategorySelect, onToggleMinimize, i
 
   return (
     <aside 
-      className={`fixed left-0 top-0 h-screen border-r border-brand-border flex flex-col z-50 bg-[#050505] transition-all duration-500 ease-in-out overflow-y-auto ${isMinimized ? 'w-20 p-4' : 'w-64 p-6'}`}
+      className={`fixed left-0 top-0 h-screen border-r border-brand-border flex flex-col z-50 bg-[#050505] transition-all duration-500 ease-in-out ${isMinimized ? 'w-20 p-4 overflow-visible' : 'w-64 p-6 overflow-y-auto'}`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
@@ -88,7 +88,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCategorySelect, onToggleMinimize, i
               {!isMinimized && <span className="text-sm font-medium">Home</span>}
             </button>
             {isMinimized && (
-              <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-3 py-1.5 bg-white text-black text-xs font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 shadow-xl">
+              <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-3 py-1.5 bg-white text-black text-xs font-bold rounded-lg opacity-0 -translate-x-2 invisible group-hover:opacity-100 group-hover:visible group-hover:translate-x-0 transition-all duration-300 ease-out whitespace-nowrap z-50 shadow-xl">
                 Home
                 <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-white rotate-45"></div>
               </div>
@@ -107,7 +107,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCategorySelect, onToggleMinimize, i
                   {!isMinimized && <span className="text-sm font-medium whitespace-nowrap">{item.label}</span>}
                 </button>
                 {isMinimized && (
-                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-3 py-1.5 bg-white text-black text-xs font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 shadow-xl">
+                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-3 py-1.5 bg-white text-black text-xs font-bold rounded-lg opacity-0 -translate-x-2 invisible group-hover:opacity-100 group-hover:visible group-hover:translate-x-0 transition-all duration-300 ease-out whitespace-nowrap z-50 shadow-xl">
                     {item.label}
                     <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-white rotate-45"></div>
                   </div>
@@ -123,14 +123,21 @@ const Sidebar: React.FC<SidebarProps> = ({ onCategorySelect, onToggleMinimize, i
 
       {/* Upload Button */}
       {user && (
-        <div className={`mt-auto pt-4 ${isMinimized ? 'flex justify-center' : 'px-3'}`}>
-          <button 
-            className={`flex items-center gap-3 text-emerald-500 hover:text-emerald-400 transition-colors ${isMinimized ? 'justify-center' : ''}`}
-            title={isMinimized ? 'Upload News' : ''}
-          >
-            <PlusCircle className="w-5 h-5 shrink-0" />
-            {!isMinimized && <span className="text-sm font-bold whitespace-nowrap">Upload News</span>}
-          </button>
+        <div className={`mt-auto pt-4 ${isMinimized ? '' : 'px-3'}`}>
+          <div className="relative group">
+            <button 
+              className={`w-full flex items-center gap-3 text-emerald-500 hover:text-emerald-400 transition-colors ${isMinimized ? 'justify-center' : ''}`}
+            >
+              <PlusCircle className="w-5 h-5 shrink-0" />
+              {!isMinimized && <span className="text-sm font-bold whitespace-nowrap">Upload News</span>}
+            </button>
+            {isMinimized && (
+              <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-3 py-1.5 bg-white text-black text-xs font-bold rounded-lg opacity-0 -translate-x-2 invisible group-hover:opacity-100 group-hover:visible group-hover:translate-x-0 transition-all duration-300 ease-out whitespace-nowrap z-50 shadow-xl">
+                Upload News
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-white rotate-45"></div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </aside>

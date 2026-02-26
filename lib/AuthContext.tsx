@@ -1,11 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-
-interface User {
-  uid: string;
-  email: string | null;
-  displayName: string | null;
-  avatar?: string;
-}
+import { getSupabaseClient } from './supabase';
+import { User } from '@supabase/supabase-js';
 
 interface AuthContextType {
   user: User | null;
@@ -21,25 +16,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate checking auth state
-    const timer = setTimeout(() => {
+    const supabase = getSupabaseClient();
+
+    if (!supabase) {
       setLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
+      return;
+    }
+
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+      setLoading(false);
+    };
+
+    checkUser();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async () => {
-    // Mock sign in
-    setUser({
-      uid: '123',
-      email: 'founder@youthstartup.in',
-      displayName: 'Founder User',
-      avatar: 'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?auto=format&fit=crop&q=80&w=200'
-    });
+    const supabase = getSupabaseClient();
+    if (!supabase) return;
+    await supabase.auth.signInWithOAuth({ provider: 'google' });
   };
 
   const signOut = async () => {
-    setUser(null);
+    const supabase = getSupabaseClient();
+    if (!supabase) return;
+    await supabase.auth.signOut();
   };
 
   return (

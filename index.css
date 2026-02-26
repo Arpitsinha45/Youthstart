@@ -96,3 +96,15 @@
   60% { transform: translateY(-0.1em); }
   80% { transform: translateY(0); }
 }
+
+/* Drop cap for article content */
+.prose > p:first-of-type::first-letter {
+  float: left;
+  font-size: 3.5rem;
+  line-height: 0.8;
+  padding-right: 0.75rem;
+  padding-top: 0.25rem;
+  font-weight: 700;
+  font-family: 'Playfair Display', serif;
+  color: #10b981; /* emerald-500 */
+}
