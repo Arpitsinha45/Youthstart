@@ -35,7 +35,7 @@ const Hero: React.FC<HeroProps> = ({ onStoryClick, stories }) => {
   };
 
   return (
-    <section className="relative h-[80vh] min-h-[500px] max-h-[800px] w-full overflow-hidden group">
+    <section className="relative h-[50vh] md:h-[80vh] min-h-[300px] md:min-h-[500px] max-h-[800px] w-full overflow-hidden group">
       <AnimatePresence mode="wait">
         <motion.div
           key={currentStory.id}

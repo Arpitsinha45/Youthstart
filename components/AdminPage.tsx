@@ -80,13 +80,13 @@ const AdminPage: React.FC<AdminPageProps> = ({ onBack, stories, setStories }) =>
             
             <div className="flex items-center gap-3">
               <div className="text-right hidden md:block">
-                <div className="text-sm font-bold text-white">{user?.displayName || 'Admin User'}</div>
+                <div className="text-sm font-bold text-white">{user?.user_metadata?.full_name || 'Admin User'}</div>
                 <div className="text-[10px] text-gray-500 uppercase tracking-wider">Administrator</div>
               </div>
               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-500 to-blue-500 p-[1px]">
                 <div className="w-full h-full rounded-full bg-black flex items-center justify-center overflow-hidden">
-                  {user?.avatar ? (
-                    <img src={user.avatar} alt="User" className="w-full h-full object-cover" />
+                  {user?.user_metadata?.avatar_url ? (
+                    <img src={user.user_metadata.avatar_url} alt="User" className="w-full h-full object-cover" />
                   ) : (
                     <User className="w-5 h-5 text-gray-400" />
                   )}

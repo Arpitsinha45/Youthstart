@@ -8,7 +8,6 @@ import ArticlePage from './components/ArticlePage';
 import CategoryPage from './components/CategoryPage';
 import AuthorPage from './components/AuthorPage';
 import AdminPage from './components/AdminPage';
-import LoginPage from './components/LoginPage';
 import AboutPage from './components/AboutPage';
 import Newsletter from './components/Newsletter';
 import Footer from './components/Footer';
@@ -21,8 +20,10 @@ import { InteractiveMenu, InteractiveMenuItem } from './components/ui/modern-mob
 
 import { LATEST_STORIES } from './constants';
 
+import ConfigError from './components/ConfigError';
+
 const AppContent: React.FC = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, signIn } = useAuth();
   const [stories, setStories] = useState<Story[]>(LATEST_STORIES);
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -31,6 +32,15 @@ const AppContent: React.FC = () => {
   const [isSidebarMinimized, setIsSidebarMinimized] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [currentView, setCurrentView] = useState<'home' | 'admin' | 'login' | 'about' | 'article'>('home');
+
+  const missingKeys = [];
+  if (!import.meta.env.VITE_SUPABASE_URL) missingKeys.push('VITE_SUPABASE_URL');
+  if (!import.meta.env.VITE_SUPABASE_ANON_KEY) missingKeys.push('VITE_SUPABASE_ANON_KEY');
+  if (!import.meta.env.VITE_GEMINI_API_KEY) missingKeys.push('VITE_GEMINI_API_KEY');
+
+  if (missingKeys.length > 0 && !loading) {
+    return <ConfigError missingKeys={missingKeys} />;
+  }
 
   const mobileMenuItems: InteractiveMenuItem[] = [
     { label: 'Home', icon: Home },
@@ -84,27 +94,12 @@ const AppContent: React.FC = () => {
 
     const handleNavigation = () => {
       const path = window.location.pathname;
-      if (path === '/admin') {
-        if (!loading) {
-          if (user) {
-            setCurrentView('admin');
-          } else {
-            window.history.pushState({}, '', '/login');
-            setCurrentView('login');
-          }
-        }
-      } else if (path === '/login') {
-        if (user) {
-          window.history.pushState({}, '', '/admin');
-          setCurrentView('admin');
-        } else {
-          setCurrentView('login');
-        }
+      if (path === '/admin' && user) {
+        setCurrentView('admin');
       } else if (path === '/about') {
         setCurrentView('about');
       } else if (path.startsWith('/article/')) {
         setCurrentView('article');
-        // We don't set selectedStory here because ArticlePage will fetch it by slug
         setSelectedStory(null); 
       } else {
         setCurrentView('home');
@@ -115,7 +110,7 @@ const AppContent: React.FC = () => {
     handleNavigation();
     window.addEventListener('popstate', handleNavigation);
     return () => window.removeEventListener('popstate', handleNavigation);
-  }, [user, loading]);
+  }, [user]);
 
   const handleCategorySelect = (category: string | null) => {
     setSelectedCategory(category);
@@ -175,13 +170,19 @@ const AppContent: React.FC = () => {
     setCurrentView('admin');
   };
 
+  const handleAdminClick = () => {
+    if (user) {
+      setCurrentView('admin');
+      window.history.pushState({}, '', '/admin');
+    } else {
+      signIn();
+    }
+  };
+
   if (loading) {
     return <div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>;
   }
 
-  if (currentView === 'login') {
-    return <LoginPage onLoginSuccess={handleLoginSuccess} />;
-  }
 
   if (currentView === 'admin') {
     return <AdminPage onBack={() => {
@@ -203,6 +204,7 @@ const AppContent: React.FC = () => {
           onToggleMinimize={toggleSidebarMinimize}
           isMinimized={isSidebarMinimized}
           selectedCategory={selectedCategory}
+          signIn={signIn}
         />
       </div>
 
@@ -215,6 +217,7 @@ const AppContent: React.FC = () => {
           onSearch={handleSearch}
           searchQuery={searchQuery}
           onAboutClick={handleAboutClick}
+          onAdminClick={handleAdminClick}
         />
 
         {/* Content with top margin for fixed header */}

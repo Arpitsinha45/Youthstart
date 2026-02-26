@@ -106,7 +106,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category, onStoryClick, isL
                             <Clock className="w-3 h-3" /> {story.readTime}
                           </span>
                         </div>
-                        <h3 className="text-3xl md:text-5xl font-bold serif-title leading-tight mb-4 group-hover:text-white text-gray-100 transition-colors max-w-3xl">
+                        <h3 className="text-3xl md:text-5xl font-medium serif-title leading-snug md:leading-snug mb-4 group-hover:text-white text-gray-100 transition-colors max-w-3xl">
                           {story.title}
                         </h3>
                         <p className="text-sm md:text-base text-gray-400 line-clamp-2 max-w-2xl mb-8">
@@ -139,7 +139,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category, onStoryClick, isL
                               <Clock className="w-3 h-3" /> {story.readTime}
                             </span>
                           </div>
-                          <h3 className="text-xl font-bold serif-title leading-snug mb-4 group-hover:text-white text-gray-200 transition-colors">
+                          <h3 className="text-xl font-medium serif-title leading-normal mb-4 group-hover:text-white text-gray-200 transition-colors">
                             {story.title}
                           </h3>
                           <p className="text-xs text-gray-500 line-clamp-3 mb-6">

@@ -10,9 +10,10 @@ interface HeaderProps {
   onSearch: (query: string) => void;
   searchQuery: string;
   onAboutClick: () => void;
+  onAdminClick?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, onSearch, searchQuery, onAboutClick }) => {
+const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, onSearch, searchQuery, onAboutClick, onAdminClick }) => {
   const { user, signIn, signOut } = useAuth();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -108,6 +109,15 @@ const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, o
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
+            {user && (
+              <button 
+                onClick={onAdminClick}
+                className="flex items-center gap-1.5 px-3 py-1 bg-white text-black rounded-full text-[9px] font-bold uppercase tracking-widest hover:bg-gray-200 transition-all"
+              >
+                <PlusCircle className="w-3 h-3" />
+                Write
+              </button>
+            )}
             <div className="flex items-center gap-2 cursor-pointer" onClick={() => handleCategoryClick(null)}>
               <span className="text-sm font-bold tracking-tighter">YouthStartup.in</span>
             </div>
@@ -124,9 +134,12 @@ const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, o
           
           {user ? (
             <div className="flex items-center gap-4">
-              <button className="hidden sm:flex items-center gap-2 px-4 py-1.5 bg-white text-black rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-gray-200 transition-all">
+              <button 
+                onClick={onAdminClick}
+                className="hidden sm:flex items-center gap-2 px-4 py-1.5 bg-white text-black rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-gray-200 transition-all"
+              >
                 <PlusCircle className="w-3 h-3" />
-                Upload News
+                Write Article
               </button>
               <div className="flex items-center gap-2 group relative">
                 <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-brand-border cursor-pointer">
@@ -134,7 +147,7 @@ const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, o
                 </div>
                 <div className="absolute top-full right-0 mt-2 w-48 bg-black border border-brand-border rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all p-2 z-50">
                   <div className="px-4 py-2 border-b border-brand-border mb-2">
-                    <p className="text-[10px] font-bold text-white truncate">{user.displayName}</p>
+                    <p className="text-[10px] font-bold text-white truncate">{user.user_metadata?.full_name || user.email}</p>
                     <p className="text-[9px] text-gray-500 truncate">{user.email}</p>
                   </div>
                   <button 
@@ -151,13 +164,16 @@ const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, o
             <div className="flex items-center gap-4">
               <button 
                 onClick={signIn}
-                className="text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
+                className="hidden sm:flex items-center gap-2 px-4 py-1.5 bg-white text-black rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-gray-200 transition-all"
+              >
+                <PlusCircle className="w-3 h-3" />
+                Write Article
+              </button>
+              <button 
+                onClick={signIn}
+                className="sm:hidden text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
               >
                 Sign In
-              </button>
-              <button className="hidden sm:flex items-center gap-2 px-4 py-1.5 border border-brand-border rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all">
-                <Bell className="w-3 h-3" />
-                Subscribe
               </button>
             </div>
           )}
