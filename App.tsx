@@ -79,6 +79,9 @@ const AppContent: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    // Ensure this only runs on the client side
+    if (typeof window === 'undefined') return;
+
     const handleNavigation = () => {
       const path = window.location.pathname;
       if (path === '/admin') {
@@ -277,10 +280,14 @@ const AppContent: React.FC = () => {
   );
 };
 
+import ErrorBoundary from './components/ErrorBoundary';
+
 const App: React.FC = () => {
   return (
     <AuthProvider>
-      <AppContent />
+      <ErrorBoundary>
+        <AppContent />
+      </ErrorBoundary>
     </AuthProvider>
   );
 };
