@@ -7,6 +7,8 @@ import { motion, useScroll, useSpring } from 'motion/react';
 import { AUTHORS, LATEST_STORIES } from '../constants';
 import { getPostBySlug } from '../lib/api';
 
+import SEO from './SEO';
+
 interface ArticlePageProps {
   story?: Story;
   onBack: () => void;
@@ -90,6 +92,8 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ story: initialStory, onBack, 
 
   return (
     <article className="relative min-h-screen bg-black text-white">
+      <SEO story={story} author={author} />
+
       {/* Reading Progress Bar */}
       <motion.div 
         className="fixed top-16 left-0 right-0 h-1 bg-white origin-left z-50" 
