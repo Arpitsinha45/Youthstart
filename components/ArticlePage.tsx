@@ -7,7 +7,7 @@ import { motion, useScroll, useSpring } from 'motion/react';
 import { AUTHORS, LATEST_STORIES } from '../constants';
 import { getPostBySlug } from '../lib/api';
 
-import SEO from './SEO';
+
 
 interface ArticlePageProps {
   story?: Story;
@@ -90,9 +90,37 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ story: initialStory, onBack, 
     relatedArticles.push(...additionalArticles);
   }
 
+  const siteUrl = 'https://youthstartup.in';
+  const siteName = 'YouthStartups.in';
+  const twitterHandle = '@youthstartup';
+
+  const title = story ? `${story.title} | ${siteName}` : `${siteName} - Inspiring the Next Generation of Entrepreneurs`;
+  const description = story?.excerpt || 'A premium editorial news platform focused on real entrepreneur stories, startup journeys, and business insights.';
+  const imageUrl = story?.featuredImage || `${siteUrl}/default-social-image.jpg`;
+  const canonicalUrl = story ? `${siteUrl}/article/${story.slug}` : siteUrl;
+
   return (
     <article className="relative min-h-screen bg-black text-white">
-      <SEO story={story} author={author} />
+      <title>{title}</title>
+      <meta name="description" content={description} />
+      <link rel="canonical" href={canonicalUrl} />
+
+      {/* Open Graph / Facebook */}
+      <meta property="og:type" content={story ? 'article' : 'website'} />
+      <meta property="og:url" content={canonicalUrl} />
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
+      <meta property="og:image" content={imageUrl} />
+      <meta property="og:site_name" content={siteName} />
+
+      {/* Twitter */}
+      <meta property="twitter:card" content="summary_large_image" />
+      <meta property="twitter:url" content={canonicalUrl} />
+      <meta property="twitter:title" content={title} />
+      <meta property="twitter:description" content={description} />
+      <meta property="twitter:image" content={imageUrl} />
+      <meta name="twitter:site" content={twitterHandle} />
+      <meta name="twitter:creator" content={author?.social?.twitter || twitterHandle} />
 
       {/* Reading Progress Bar */}
       <motion.div 
