@@ -98,7 +98,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onBack, stories, setStories }) =>
               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-500 to-blue-500 p-[1px]">
                 <div className="w-full h-full rounded-full bg-black flex items-center justify-center overflow-hidden">
                   {user?.user_metadata?.avatar_url ? (
-                    <img src={user.user_metadata.avatar_url} alt="User" className="w-full h-full object-cover" />
+                    <img src={user?.user_metadata?.avatar_url} alt="User" className="w-full h-full object-cover" />
                   ) : (
                     <User className="w-5 h-5 text-gray-400" />
                   )}

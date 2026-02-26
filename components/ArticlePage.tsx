@@ -161,7 +161,7 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ story: initialStory, onBack, 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
-            className="flex flex-wrap items-center justify-center gap-6 md:gap-8 py-6 border-y border-white/10 mb-12"
+            className="flex flex-wrap items-center justify-center gap-6 md:gap-8 py-6 border-y md:border-none border-white/10 mb-12"
           >
             <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-white">
               <User className="w-4 h-4 text-emerald-500" />

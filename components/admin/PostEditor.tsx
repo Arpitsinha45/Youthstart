@@ -351,25 +351,25 @@ export const PostEditor: React.FC<PostEditorProps> = ({ stories, setStories }) =
             </tr>
           </thead>
           <tbody className="divide-y divide-white/10">
-            {stories.map((story) => (
-              <tr key={story.id} className="hover:bg-white/5 transition-colors">
-                <td className="p-4 font-medium text-white max-w-[200px] truncate" title={story.title}>{story.title}</td>
-                <td className="p-4 text-gray-400">{story.author}</td>
-                <td className="p-4"><span className="px-2 py-1 bg-white/10 rounded text-xs">{story.category}</span></td>
-                <td className="p-4 text-gray-400">{story.publishedAt}</td>
+            {(stories || []).map((story) => (
+              <tr key={story?.id} className="hover:bg-white/5 transition-colors">
+                <td className="p-4 font-medium text-white max-w-[200px] truncate" title={story?.title}>{story?.title}</td>
+                <td className="p-4 text-gray-400">{story?.author}</td>
+                <td className="p-4"><span className="px-2 py-1 bg-white/10 rounded text-xs">{story?.category}</span></td>
+                <td className="p-4 text-gray-400">{story?.publishedAt}</td>
                 <td className="p-4">
                   <button 
-                    onClick={() => toggleFeatured(story.id, story.featured || false)}
-                    className={`p-1.5 rounded-full transition-colors ${story.featured ? 'bg-amber-500/20 text-amber-400' : 'bg-white/5 text-gray-500 hover:text-white'}`}
-                    title={story.featured ? "Remove from featured" : "Set as featured"}
+                    onClick={() => toggleFeatured(story?.id, story?.featured || false)}
+                    className={`p-1.5 rounded-full transition-colors ${story?.featured ? 'bg-amber-500/20 text-amber-400' : 'bg-white/5 text-gray-500 hover:text-white'}`}
+                    title={story?.featured ? "Remove from featured" : "Set as featured"}
                   >
-                    <Star className={`w-4 h-4 ${story.featured ? 'fill-current' : ''}`} />
+                    <Star className={`w-4 h-4 ${story?.featured ? 'fill-current' : ''}`} />
                   </button>
                 </td>
                 <td className="p-4">
                   <div className="flex items-center gap-2">
                     <button onClick={() => handleEditClick(story)} className="p-1 text-gray-400 hover:text-white transition-colors"><Edit2 className="w-4 h-4" /></button>
-                    <button onClick={() => handleDelete(story.id)} className="p-1 text-gray-400 hover:text-red-400 transition-colors"><Trash2 className="w-4 h-4" /></button>
+                    <button onClick={() => handleDelete(story?.id)} className="p-1 text-gray-400 hover:text-red-400 transition-colors"><Trash2 className="w-4 h-4" /></button>
                   </div>
                 </td>
               </tr>

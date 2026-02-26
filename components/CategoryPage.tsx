@@ -35,7 +35,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ category, onStoryClick, isL
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Category Header */}
-      <div className="relative h-[40vh] min-h-[300px] flex items-center justify-center overflow-hidden border-b border-white/10">
+      <div className="relative h-[40vh] min-h-[300px] flex items-center justify-center overflow-hidden border-b md:border-b-0 border-white/10">
         <div className="absolute inset-0 bg-gradient-to-b from-emerald-900/20 to-black z-0" />
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 z-0" />
         

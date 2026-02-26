@@ -22,6 +22,8 @@ import { LATEST_STORIES } from './constants';
 
 import ConfigError from './components/ConfigError';
 
+import ProtectedRoute from './components/ProtectedRoute';
+
 const AppContent: React.FC = () => {
   const { user, loading, signIn } = useAuth();
   const [stories, setStories] = useState<Story[]>(LATEST_STORIES || []);
@@ -54,14 +56,23 @@ const AppContent: React.FC = () => {
     if (selectedCategory === 'Trending') return 1;
     if (selectedCategory === 'AI Tools') return 2;
     if (selectedCategory === 'Founders') return 3;
-    // Search is not implemented as a category yet, default to 0 if not matched
-    return 0;
+    if (searchQuery) return 4; // If search is active, highlight search icon
+    return 0; // Default to Home
   };
 
   const handleMobileMenuChange = (index: number, item: InteractiveMenuItem) => {
     if (item.label === 'Home') {
       handleCategorySelect(null);
-    } else if (item.label !== 'Search') {
+    } else if (item.label === 'Search') {
+      // For search, we might want to open the search bar or navigate to a search page
+      // For now, let's just clear category and activate search mode if needed
+      setSelectedCategory('Search Results');
+      setSelectedStory(null);
+      setSelectedAuthorId(null);
+      setCurrentView('home');
+      // Optionally, open the search input in the header if it's not already
+      // setIsSearchOpen(true); // This would require passing setIsSearchOpen from AppContent to Header
+    } else {
       handleCategorySelect(item.label);
     }
   };
@@ -185,10 +196,14 @@ const AppContent: React.FC = () => {
 
 
   if (currentView === 'admin') {
-    return <AdminPage onBack={() => {
-      window.history.pushState({}, '', '/');
-      setCurrentView('home');
-    }} stories={stories} setStories={setStories} />;
+    return (
+      <ProtectedRoute>
+        <AdminPage onBack={() => {
+          window.history.pushState({}, '', '/');
+          setCurrentView('home');
+        }} stories={stories} setStories={setStories} />
+      </ProtectedRoute>
+    );
   }
 
   return (

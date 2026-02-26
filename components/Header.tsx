@@ -48,7 +48,7 @@ const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, o
   };
 
   return (
-    <header className={`fixed top-0 right-0 h-16 border-b md:border-b-0 border-brand-border bg-black/80 backdrop-blur-md z-40 flex items-center px-4 md:px-8 lg:px-12 transition-all duration-500 ${isSidebarMinimized ? 'left-0 lg:left-20' : 'left-0 lg:left-64'}`}>
+    <header className={`fixed top-0 right-0 h-16 border-b border-brand-border md:border-none bg-black/80 backdrop-blur-md z-40 flex items-center px-4 md:px-8 lg:px-12 transition-all duration-500 ${isSidebarMinimized ? 'left-0 lg:left-20' : 'left-0 lg:left-64'}`}>
       <div className="flex items-center justify-between w-full relative">
         
         {/* Search Bar Overlay */}
@@ -112,10 +112,10 @@ const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, o
             {user && (
               <button 
                 onClick={onAdminClick}
-                className="flex items-center gap-1.5 px-3 py-1 bg-white text-black rounded-full text-[9px] font-bold uppercase tracking-widest hover:bg-gray-200 transition-all"
+                className="flex items-center gap-1.5 px-4 py-1.5 bg-emerald-500 text-white rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 transition-all active:scale-95"
               >
-                <PlusCircle className="w-3 h-3" />
-                Write
+                <PlusCircle className="w-3.5 h-3.5" />
+                Write Article
               </button>
             )}
             <div className="flex items-center gap-2 cursor-pointer" onClick={() => handleCategoryClick(null)}>
