@@ -1,9 +1,6 @@
 import React from 'react';
-import { 
-  LayoutDashboard, FileText, Layers, Rocket, 
-  DollarSign, Mail, Palette, Settings, LogOut, ArrowLeft, X,
-  Send, Image
-} from 'lucide-react';
+import { LogOut, ArrowLeft, X } from 'lucide-react';
+import { ADMIN_SIDEBAR_MENU, ADMIN_ICON_MAP } from '../../src/constants/admin';
 
 interface SidebarProps {
   activeTab: string;
@@ -13,19 +10,6 @@ interface SidebarProps {
   onClose: () => void;
   onSignOut: () => void;
 }
-
-const navItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'posts', label: 'Posts & Articles', icon: FileText },
-  { id: 'pages', label: 'Page Builder', icon: Layers },
-  { id: 'startups', label: 'Startups', icon: Rocket },
-  { id: 'submissions', label: 'Submissions', icon: Send },
-  { id: 'media', label: 'Media Library', icon: Image },
-  { id: 'monetization', label: 'Monetization', icon: DollarSign },
-  { id: 'newsletter', label: 'Newsletter', icon: Mail },
-  { id: 'appearance', label: 'Appearance', icon: Palette },
-  { id: 'settings', label: 'Settings', icon: Settings },
-];
 
 export const AdminSidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onBack, isOpen, onClose, onSignOut }) => {
   return (
@@ -50,8 +34,8 @@ export const AdminSidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, 
         </div>
         
         <nav className="flex-1 py-6 px-3 space-y-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
+          {ADMIN_SIDEBAR_MENU.map((item) => {
+            const Icon = ADMIN_ICON_MAP[item.id];
             const isActive = activeTab === item.id;
             return (
               <button

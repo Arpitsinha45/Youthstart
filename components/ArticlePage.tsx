@@ -223,7 +223,7 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ story: initialStory, onBack, 
             transition={{ duration: 0.6, delay: 0.2 }}
             className="prose prose-invert prose-lg md:prose-xl max-w-none 
               prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-white
-              prose-p:text-gray-300 prose-p:leading-8 prose-p:mb-8
+              prose-p:text-gray-300 prose-p:text-xl prose-p:leading-loose md:prose-p:text-2xl md:prose-p:leading-relaxed prose-p:mb-8
               prose-a:text-emerald-500 prose-a:no-underline hover:prose-a:underline
               prose-blockquote:border-l-emerald-500 prose-blockquote:bg-white/5 prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
               prose-strong:text-white prose-strong:font-semibold

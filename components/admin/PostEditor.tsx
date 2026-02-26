@@ -1,57 +1,91 @@
 import React, { useState } from 'react';
 import { Plus, Edit2, Trash2, Image as ImageIcon, Sparkles, Star, Loader2, Save, X } from 'lucide-react';
-import { Story } from '../../types';
+import { Post, Author, Category } from '../../src/types/admin';
 import { generateArticleImage } from '../../lib/geminiService';
 import AIFeatureWrapper from '../AIFeatureWrapper';
-import { createPost, updatePost, deletePost, uploadImage } from '../../lib/adminApi';
+import { createPost, updatePost, deletePost, uploadImage, getPosts } from '../../lib/adminApi';
 
 interface PostEditorProps {
-  stories: Story[];
-  setStories: React.Dispatch<React.SetStateAction<Story[]>>;
+  posts: Post[];
+  setPosts: React.Dispatch<React.SetStateAction<Post[]>>; 
   hasAIKey: boolean;
 }
 
-export const PostEditor: React.FC<PostEditorProps> = ({ stories, setStories, hasAIKey }) => {
+export const PostEditor: React.FC<PostEditorProps> = ({ posts: initialPosts, setPosts, hasAIKey }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  
+  const [posts, setLocalPosts] = useState<Post[]>(initialPosts);
+
   // Form State
   const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
   const [content, setContent] = useState('');
   const [excerpt, setExcerpt] = useState('');
-  const [coverImage, setCoverImage] = useState<string | null>(null);
-  const [category, setCategory] = useState('Founder Stories');
-  const [featured, setFeatured] = useState(false);
-  const [author, setAuthor] = useState('YouthStartup Team');
+  const [featuredImage, setFeaturedImage] = useState<string | null>(null);
+  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [authorId, setAuthorId] = useState<string | null>(null);
+  const [isFeatured, setIsFeatured] = useState(false);
+  const [status, setStatus] = useState<'draft' | 'published' | 'scheduled'>('draft');
+  const [seoTitle, setSeoTitle] = useState('');
+  const [seoDescription, setSeoDescription] = useState('');
+  const [ogImage, setOgImage] = useState<string | null>(null);
+  const [tags, setTags] = useState<string[]>([]);
 
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [loadingPosts, setLoadingPosts] = useState(true);
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    setLoadingPosts(true);
+    try {
+      const fetchedPosts = await getPosts();
+      setLocalPosts(fetchedPosts);
+      setPosts(fetchedPosts); // Update parent state
+    } catch (error) {
+      console.error("Failed to fetch posts", error);
+    } finally {
+      setLoadingPosts(false);
+    }
+  };
 
   const resetForm = () => {
     setTitle('');
     setSlug('');
     setContent('');
     setExcerpt('');
-    setCoverImage(null);
-    setCategory('Founder Stories');
-    setFeatured(false);
-    setAuthor('YouthStartup Team');
+    setFeaturedImage(null);
+    setCategoryId(null);
+    setAuthorId(null);
+    setIsFeatured(false);
+    setStatus('draft');
+    setSeoTitle('');
+    setSeoDescription('');
+    setOgImage(null);
+    setTags([]);
     setEditingId(null);
     setIsEditing(false);
   };
 
-  const handleEditClick = (story: Story) => {
-    setTitle(story.title);
-    setSlug(story.slug);
-    setContent(story.content);
-    setExcerpt(story.excerpt);
-    setCoverImage(story.featuredImage);
-    setCategory(story.category);
-    setFeatured(story.featured || false);
-    setAuthor(story.author || 'YouthStartup Team');
-    setEditingId(story.id);
+  const handleEditClick = (post: Post) => {
+    setTitle(post.title);
+    setSlug(post.slug);
+    setContent(post.content);
+    setExcerpt(post.excerpt || '');
+    setFeaturedImage(post.featured_image || null);
+    setCategoryId(post.category_id || null);
+    setAuthorId(post.author_id || null);
+    setIsFeatured(post.is_featured);
+    setStatus(post.status);
+    setSeoTitle(post.seo_title || '');
+    setSeoDescription(post.seo_description || '');
+    setOgImage(post.og_image || null);
+    setTags(post.tags || []);
+    setEditingId(post.id);
     setIsEditing(true);
   };
 
@@ -77,7 +111,7 @@ export const PostEditor: React.FC<PostEditorProps> = ({ stories, setStories, has
     setIsUploading(true);
     try {
       const url = await uploadImage(file);
-      setCoverImage(url);
+      setFeaturedImage(url);
     } catch (error) {
       console.error("Failed to upload image", error);
       alert("Failed to upload image");
@@ -99,7 +133,7 @@ export const PostEditor: React.FC<PostEditorProps> = ({ stories, setStories, has
       const file = new File([blob], `generated-${Date.now()}.png`, { type: 'image/png' });
       
       const uploadedUrl = await uploadImage(file);
-      setCoverImage(uploadedUrl);
+      setFeaturedImage(uploadedUrl);
     } catch (error) {
       console.error("Failed to generate image", error);
       alert("Failed to generate image");
@@ -109,46 +143,35 @@ export const PostEditor: React.FC<PostEditorProps> = ({ stories, setStories, has
   };
 
   const handleSave = async () => {
-    if (!title || !content) {
-      alert("Title and content are required");
+    if (!title || !content || !authorId || !categoryId) {
+      alert("Title, content, author, and category are required");
       return;
     }
 
     setIsSaving(true);
     try {
-      const postData = {
+      const postData: Partial<Post> = {
         title,
         slug: slug || generateSlug(title),
         content,
         excerpt,
-        featuredImage: coverImage || '',
-        category,
-        featured,
-        author,
-        published: true,
-        sponsored: false
+        featured_image: featuredImage,
+        category_id: categoryId,
+        author_id: authorId,
+        is_featured: isFeatured,
+        status,
+        seo_title: seoTitle,
+        seo_description: seoDescription,
+        og_image: ogImage,
+        tags,
       };
 
       if (editingId) {
         await updatePost(editingId, postData);
-        setStories(prev => prev.map(s => s.id === editingId ? { ...s, ...postData } : s));
+        fetchPosts(); // Refetch to get updated data
       } else {
-        const newPost = await createPost(postData);
-        // We need to map the new post to Story format to add to state
-        // For simplicity, we'll reload the page or just add it with basic fields
-        // Ideally, createPost should return the mapped story or we fetch it
-        // But createPost returns the DB row. Let's just add it to local state manually for now
-        // or trigger a refetch in parent. 
-        // Since we don't have refetch prop, we'll construct a Story object.
-        const newStory: Story = {
-          id: newPost.id,
-          ...postData,
-          publishedAt: new Date().toLocaleDateString(),
-          readTime: '5 min read', // Mock
-          published: true,
-          sponsored: false
-        };
-        setStories(prev => [newStory, ...prev]);
+        await createPost(postData);
+        fetchPosts(); // Refetch to get new post
       }
       resetForm();
     } catch (error) {
@@ -163,7 +186,7 @@ export const PostEditor: React.FC<PostEditorProps> = ({ stories, setStories, has
     if (!confirm("Are you sure you want to delete this post?")) return;
     try {
       await deletePost(id);
-      setStories(prev => prev.filter(s => s.id !== id));
+      fetchPosts(); // Refetch to update list
     } catch (error) {
       console.error("Failed to delete post", error);
       alert("Failed to delete post");
@@ -172,14 +195,16 @@ export const PostEditor: React.FC<PostEditorProps> = ({ stories, setStories, has
 
   const toggleFeatured = async (id: string, currentFeatured: boolean) => {
     try {
-      await updatePost(id, { featured: !currentFeatured });
-      setStories(stories.map(story => 
-        story.id === id ? { ...story, featured: !story.featured } : story
-      ));
+      await updatePost(id, { is_featured: !currentFeatured });
+      fetchPosts(); // Refetch to update list
     } catch (error) {
       console.error("Failed to toggle featured", error);
     }
   };
+
+  if (loadingPosts) {
+    return <div className="text-white">Loading posts...</div>;
+  }
 
   if (isEditing) {
     return (
@@ -193,7 +218,7 @@ export const PostEditor: React.FC<PostEditorProps> = ({ stories, setStories, has
               disabled={isSaving}
               className="px-4 py-2 rounded-lg bg-white text-black hover:bg-gray-200 transition-colors text-sm font-bold flex items-center gap-2"
             >
-              {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
+              {isSaving && <Loader2 className="w-4 h-4 animate-spin" />} 
               {editingId ? 'Update Post' : 'Publish Post'}
             </button>
           </div>
@@ -210,11 +235,11 @@ export const PostEditor: React.FC<PostEditorProps> = ({ stories, setStories, has
             />
             
             <div className="relative group">
-              {coverImage ? (
+              {featuredImage ? (
                 <div className="relative w-full h-64 rounded-2xl overflow-hidden">
-                  <img src={coverImage} alt="Cover" className="w-full h-full object-cover" />
+                  <img src={featuredImage} alt="Cover" className="w-full h-full object-cover" />
                   <button 
-                    onClick={() => setCoverImage(null)}
+                    onClick={() => setFeaturedImage(null)}
                     className="absolute top-2 right-2 p-2 bg-black/50 rounded-full text-white hover:bg-red-500/80 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -232,7 +257,7 @@ export const PostEditor: React.FC<PostEditorProps> = ({ stories, setStories, has
                 </label>
               )}
               
-              {!coverImage && (
+              {!featuredImage && (
                 <AIFeatureWrapper hasAIKey={hasAIKey} fallbackMessage="AI image generation unavailable">
                   <button 
                     onClick={handleGenerateImage}
@@ -349,7 +374,7 @@ export const PostEditor: React.FC<PostEditorProps> = ({ stories, setStories, has
               <th className="p-4 font-medium">Title</th>
               <th className="p-4 font-medium">Author</th>
               <th className="p-4 font-medium">Category</th>
-              <th className="p-4 font-medium">Date</th>
+              <th className="p-4 font-medium">Status</th>
               <th className="p-4 font-medium">Featured</th>
               <th className="p-4 font-medium">Actions</th>
             </tr>
@@ -357,23 +382,27 @@ export const PostEditor: React.FC<PostEditorProps> = ({ stories, setStories, has
           <tbody className="divide-y divide-white/10">
             {(stories || []).map((story) => (
               <tr key={story?.id} className="hover:bg-white/5 transition-colors">
-                <td className="p-4 font-medium text-white max-w-[200px] truncate" title={story?.title}>{story?.title}</td>
-                <td className="p-4 text-gray-400">{story?.author}</td>
-                <td className="p-4"><span className="px-2 py-1 bg-white/10 rounded text-xs">{story?.category}</span></td>
-                <td className="p-4 text-gray-400">{story?.publishedAt}</td>
+                <td className="p-4 font-medium text-white max-w-[200px] truncate" title={post.title}>{post.title}</td>
+                <td className="p-4 text-gray-400">{post.author_id}</td> {/* TODO: Resolve author name */}
+                <td className="p-4"><span className="px-2 py-1 bg-white/10 rounded text-xs">{post.category_id}</span></td> {/* TODO: Resolve category name */}
+                <td className="p-4 text-gray-400"><span className={`px-2 py-1 rounded text-xs ${
+                  post.status === 'published' ? 'bg-emerald-500/20 text-emerald-400' :
+                  post.status === 'scheduled' ? 'bg-blue-500/20 text-blue-400' :
+                  'bg-gray-500/20 text-gray-400'
+                }`}>{post.status}</span></td>
                 <td className="p-4">
                   <button 
-                    onClick={() => toggleFeatured(story?.id, story?.featured || false)}
-                    className={`p-1.5 rounded-full transition-colors ${story?.featured ? 'bg-amber-500/20 text-amber-400' : 'bg-white/5 text-gray-500 hover:text-white'}`}
-                    title={story?.featured ? "Remove from featured" : "Set as featured"}
+                    onClick={() => toggleFeatured(post.id, post.is_featured)}
+                    className={`p-1.5 rounded-full transition-colors ${post.is_featured ? 'bg-amber-500/20 text-amber-400' : 'bg-white/5 text-gray-500 hover:text-white'}`}
+                    title={post.is_featured ? "Remove from featured" : "Set as featured"}
                   >
-                    <Star className={`w-4 h-4 ${story?.featured ? 'fill-current' : ''}`} />
+                    <Star className={`w-4 h-4 ${post.is_featured ? 'fill-current' : ''}`} />
                   </button>
                 </td>
                 <td className="p-4">
                   <div className="flex items-center gap-2">
-                    <button onClick={() => handleEditClick(story)} className="p-1 text-gray-400 hover:text-white transition-colors"><Edit2 className="w-4 h-4" /></button>
-                    <button onClick={() => handleDelete(story?.id)} className="p-1 text-gray-400 hover:text-red-400 transition-colors"><Trash2 className="w-4 h-4" /></button>
+                    <button onClick={() => handleEditClick(post)} className="p-1 text-gray-400 hover:text-white transition-colors"><Edit2 className="w-4 h-4" /></button>
+                    <button onClick={() => handleDelete(post.id)} className="p-1 text-gray-400 hover:text-red-400 transition-colors"><Trash2 className="w-4 h-4" /></button>
                   </div>
                 </td>
               </tr>
