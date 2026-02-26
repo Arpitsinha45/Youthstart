@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Users, FileText, Eye, TrendingUp, Briefcase, Send } from 'lucide-react';
+import { Users, FileText, Eye, TrendingUp, Briefcase, Send, Plus } from 'lucide-react';
 import { getDashboardStats } from '@/lib/adminApi';
 
-export const AdminDashboard = () => {
+export const AdminDashboard = ({ setActiveTab }: { setActiveTab: (tab: string) => void }) => {
   const [stats, setStats] = useState({
     posts: 0,
     startups: 0,
@@ -58,6 +58,39 @@ export const AdminDashboard = () => {
             </div>
           );
         })}
+      </div>
+
+      <div className="bg-white/5 border border-white/10 p-8 rounded-2xl">
+        <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
+          <TrendingUp className="w-5 h-5 text-emerald-500" />
+          Quick Actions
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <button 
+            onClick={() => setActiveTab('posts')}
+            className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all text-left group"
+          >
+            <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
+              <Plus className="w-5 h-5 text-emerald-500" />
+            </div>
+            <div>
+              <div className="text-sm font-bold">New Post</div>
+              <div className="text-[10px] text-gray-500 uppercase tracking-wider">Create article</div>
+            </div>
+          </button>
+          <button 
+            onClick={() => setActiveTab('media')}
+            className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all text-left group"
+          >
+            <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
+              <Plus className="w-5 h-5 text-blue-500" />
+            </div>
+            <div>
+              <div className="text-sm font-bold">Upload Media</div>
+              <div className="text-[10px] text-gray-500 uppercase tracking-wider">Add images</div>
+            </div>
+          </button>
+        </div>
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

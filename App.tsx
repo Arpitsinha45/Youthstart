@@ -195,12 +195,10 @@ const AppContent: React.FC = () => {
 
   if (currentView === 'admin') {
     return (
-      <ProtectedRoute>
-        <AdminPage onBack={() => {
-          window.history.pushState({}, '', '/');
-          setCurrentView('home');
-        }} posts={stories as any} setPosts={setStories as any} hasAIKey={hasAIKey} />
-      </ProtectedRoute>
+      <AdminPage onBack={() => {
+        window.history.pushState({}, '', '/');
+        setCurrentView('home');
+      }} posts={stories as any} setPosts={setStories as any} hasAIKey={hasAIKey} />
     );
   }
 

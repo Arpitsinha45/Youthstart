@@ -1,6 +1,7 @@
 import React from 'react';
 import { LogOut, ArrowLeft, X } from 'lucide-react';
 import { ADMIN_SIDEBAR_MENU, ADMIN_ICON_MAP } from '../../src/constants/admin';
+import { useAuth } from '../../lib/AuthContext';
 
 interface SidebarProps {
   activeTab: string;
@@ -12,6 +13,7 @@ interface SidebarProps {
 }
 
 export const AdminSidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onBack, isOpen, onClose, onSignOut }) => {
+  const { user, signIn } = useAuth();
   return (
     <>
       {/* Mobile Overlay */}
@@ -63,11 +65,11 @@ export const AdminSidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, 
             Back to Site
           </button>
           <button 
-            onClick={onSignOut}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-400/10 transition-colors"
+            onClick={user ? onSignOut : signIn}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${user ? 'text-red-400 hover:bg-red-400/10' : 'text-emerald-400 hover:bg-emerald-400/10'}`}
           >
             <LogOut className="w-4 h-4" />
-            Sign Out
+            {user ? 'Sign Out' : 'Sign In'}
           </button>
         </div>
       </div>

@@ -31,21 +31,9 @@ const AdminPage: React.FC<AdminPageProps> = ({ onBack, posts, setPosts, hasAIKey
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-8">
-        <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
-        <p className="text-gray-400 mb-8">Please sign in to access the admin panel.</p>
-        <button onClick={onBack} className="bg-white text-black px-8 py-3 rounded-full font-bold uppercase tracking-widest text-xs">
-          Back to Home
-        </button>
-      </div>
-    );
-  }
-
   const renderContent = () => {
     switch (activeTab) {
-      case 'dashboard': return <AdminDashboard />;
+      case 'dashboard': return <AdminDashboard setActiveTab={setActiveTab} />;
       case 'posts': return <PostEditor posts={posts} setPosts={setPosts} hasAIKey={hasAIKey} />;
       case 'pages': return <PageBuilder />;
       case 'media': return <MediaManager />;
@@ -101,8 +89,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onBack, posts, setPosts, hasAIKey
             
             <div className="flex items-center gap-3">
               <div className="text-right hidden md:block">
-                <div className="text-sm font-bold text-white">{user?.user_metadata?.full_name || 'Admin User'}</div>
-                <div className="text-[10px] text-gray-500 uppercase tracking-wider">Administrator</div>
+                <div className="text-sm font-bold text-white">{user?.user_metadata?.full_name || 'Guest Admin'}</div>
+                <div className="text-[10px] text-gray-500 uppercase tracking-wider">{user ? 'Administrator' : 'Public Access'}</div>
               </div>
               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-500 to-blue-500 p-[1px]">
                 <div className="w-full h-full rounded-full bg-black flex items-center justify-center overflow-hidden">
