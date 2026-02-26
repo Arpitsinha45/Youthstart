@@ -11,9 +11,10 @@ interface HeaderProps {
   searchQuery: string;
   onAboutClick: () => void;
   onAdminClick?: () => void;
+  hasAIKey: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, onSearch, searchQuery, onAboutClick, onAdminClick }) => {
+const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, onSearch, searchQuery, onAboutClick, onAdminClick, hasAIKey }) => {
   const { user, signIn, signOut } = useAuth();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -48,7 +49,7 @@ const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, o
   };
 
   return (
-    <header className={`fixed top-0 right-0 h-16 border-b border-brand-border md:border-none bg-black/80 backdrop-blur-md z-40 flex items-center px-4 md:px-8 lg:px-12 transition-all duration-500 ${isSidebarMinimized ? 'left-0 lg:left-20' : 'left-0 lg:left-64'}`}>
+    <header className={`fixed top-0 right-0 h-16 md:border-none bg-black/80 backdrop-blur-md z-40 flex items-center px-4 md:px-8 lg:px-12 transition-all duration-500 ${isSidebarMinimized ? 'left-0 lg:left-20' : 'left-0 lg:left-64'}`}>
       <div className="flex items-center justify-between w-full relative">
         
         {/* Search Bar Overlay */}
@@ -109,7 +110,7 @@ const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, o
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
-            {user && (
+            {user && hasAIKey && (
               <button 
                 onClick={onAdminClick}
                 className="flex items-center gap-1.5 px-4 py-1.5 bg-emerald-500 text-white rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 transition-all active:scale-95"
@@ -134,13 +135,15 @@ const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, o
           
           {user ? (
             <div className="flex items-center gap-4">
-              <button 
-                onClick={onAdminClick}
-                className="hidden sm:flex items-center gap-2 px-4 py-1.5 bg-white text-black rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-gray-200 transition-all"
-              >
-                <PlusCircle className="w-3 h-3" />
-                Write Article
-              </button>
+              {hasAIKey && (
+                <button 
+                  onClick={onAdminClick}
+                  className="hidden sm:flex items-center gap-2 px-4 py-1.5 bg-white text-black rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-gray-200 transition-all"
+                >
+                  <PlusCircle className="w-3 h-3" />
+                  Write Article
+                </button>
+              )}
               <div className="flex items-center gap-2 group relative">
                 <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-brand-border cursor-pointer">
                   <User className="w-4 h-4" />
@@ -162,13 +165,15 @@ const Header: React.FC<HeaderProps> = ({ onCategorySelect, isSidebarMinimized, o
             </div>
           ) : (
             <div className="flex items-center gap-4">
-              <button 
-                onClick={signIn}
-                className="hidden sm:flex items-center gap-2 px-4 py-1.5 bg-white text-black rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-gray-200 transition-all"
-              >
-                <PlusCircle className="w-3 h-3" />
-                Write Article
-              </button>
+              {hasAIKey && (
+                <button 
+                  onClick={signIn}
+                  className="hidden sm:flex items-center gap-2 px-4 py-1.5 bg-white text-black rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-gray-200 transition-all"
+                >
+                  <PlusCircle className="w-3 h-3" />
+                  Write Article
+                </button>
+              )}
               <button 
                 onClick={signIn}
                 className="sm:hidden text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white transition-colors"

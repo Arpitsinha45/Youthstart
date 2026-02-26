@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import { Plus, Edit2, Trash2, Image as ImageIcon, Sparkles, Star, Loader2, Save, X } from 'lucide-react';
 import { Story } from '../../types';
 import { generateArticleImage } from '../../lib/geminiService';
+import AIFeatureWrapper from '../AIFeatureWrapper';
 import { createPost, updatePost, deletePost, uploadImage } from '../../lib/adminApi';
 
 interface PostEditorProps {
   stories: Story[];
   setStories: React.Dispatch<React.SetStateAction<Story[]>>;
+  hasAIKey: boolean;
 }
 
-export const PostEditor: React.FC<PostEditorProps> = ({ stories, setStories }) => {
+export const PostEditor: React.FC<PostEditorProps> = ({ stories, setStories, hasAIKey }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   
@@ -231,18 +233,20 @@ export const PostEditor: React.FC<PostEditorProps> = ({ stories, setStories }) =
               )}
               
               {!coverImage && (
-                <button 
-                  onClick={handleGenerateImage}
-                  disabled={!title || isGeneratingImage}
-                  className="absolute bottom-4 right-4 flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                >
-                  {isGeneratingImage ? (
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                  ) : (
-                    <Sparkles className="w-3 h-3" />
-                  )}
-                  {isGeneratingImage ? 'Generating...' : 'Generate with AI'}
-                </button>
+                <AIFeatureWrapper hasAIKey={hasAIKey} fallbackMessage="AI image generation unavailable">
+                  <button 
+                    onClick={handleGenerateImage}
+                    disabled={!title || isGeneratingImage}
+                    className="absolute bottom-4 right-4 flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  >
+                    {isGeneratingImage ? (
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-3 h-3" />
+                    )}
+                    {isGeneratingImage ? 'Generating...' : 'Generate with AI'}
+                  </button>
+                </AIFeatureWrapper>
               )}
             </div>
 

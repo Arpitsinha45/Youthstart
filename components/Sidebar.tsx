@@ -12,6 +12,7 @@ interface SidebarProps {
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   signIn: () => Promise<void>;
+  hasAIKey: boolean;
 }
 
 const ICON_MAP: Record<string, any> = {
@@ -35,7 +36,7 @@ const Tooltip = ({ text }: { text: string }) => (
   </motion.div>
 );
 
-const Sidebar: React.FC<SidebarProps> = ({ onCategorySelect, onToggleMinimize, isMinimized, selectedCategory, onMouseEnter, onMouseLeave, signIn }) => {
+const Sidebar: React.FC<SidebarProps> = ({ onCategorySelect, onToggleMinimize, isMinimized, selectedCategory, onMouseEnter, onMouseLeave, signIn, hasAIKey }) => {
   const { user } = useAuth();
 
   return (
@@ -105,13 +106,15 @@ const Sidebar: React.FC<SidebarProps> = ({ onCategorySelect, onToggleMinimize, i
       {/* Upload Button */}
       <div className={`mt-auto pt-4 shrink-0 ${isMinimized ? '' : 'px-3'}`}>
         <div className="relative group">
-          <button 
-            onClick={signIn}
-            className={`w-full flex items-center gap-3 text-emerald-500 hover:text-emerald-400 transition-colors ${isMinimized ? 'justify-center' : ''}`}
-          >
-            <PlusCircle className="w-5 h-5 shrink-0" />
-            {!isMinimized && <span className="text-sm font-bold whitespace-nowrap">Sign In & Upload</span>}
-          </button>
+          {hasAIKey && !user && (
+            <button 
+              onClick={signIn}
+              className={`w-full flex items-center gap-3 text-emerald-500 hover:text-emerald-400 transition-colors ${isMinimized ? 'justify-center' : ''}`}
+            >
+              <PlusCircle className="w-5 h-5 shrink-0" />
+              {!isMinimized && <span className="text-sm font-bold whitespace-nowrap">Sign In & Upload</span>}
+            </button>
+          )}
           {isMinimized && <div className="absolute opacity-0 group-hover:opacity-100"><Tooltip text="Sign In & Upload" /></div>}
         </div>
       </div>

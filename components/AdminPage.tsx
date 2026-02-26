@@ -19,9 +19,10 @@ interface AdminPageProps {
   onBack: () => void;
   stories: Story[];
   setStories: React.Dispatch<React.SetStateAction<Story[]>>;
+  hasAIKey: boolean;
 }
 
-const AdminPage: React.FC<AdminPageProps> = ({ onBack, stories, setStories }) => {
+const AdminPage: React.FC<AdminPageProps> = ({ onBack, stories, setStories, hasAIKey }) => {
   const { user, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -41,7 +42,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onBack, stories, setStories }) =>
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard': return <AdminDashboard />;
-      case 'posts': return <PostEditor stories={stories} setStories={setStories} />;
+      case 'posts': return <PostEditor stories={stories} setStories={setStories} hasAIKey={hasAIKey} />;
       case 'pages': return <PageBuilder />;
       case 'startups': return <StartupManager />;
       case 'submissions': return <SubmissionsManager />;

@@ -1,24 +1,11 @@
-import { GoogleGenAI } from "@google/genai";
-
-let ai: GoogleGenAI | null = null;
-
-function getGeminiClient(): GoogleGenAI | null {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-  
-  if (apiKey && !ai) {
-    ai = new GoogleGenAI({ apiKey });
-  }
-  
-  if (!apiKey) {
-    console.warn('Gemini API key is not set. Image generation will be disabled.');
-  }
-  
-  return ai;
-}
+import { getGeminiClient } from "../lib/gemini";
 
 export async function generateArticleImage(prompt: string): Promise<string | null> {
   const gemini = getGeminiClient();
-  if (!gemini) return null; // Return null if the client isn't available
+  if (!gemini) {
+    console.warn('Gemini client not initialized. AI image generation will be disabled.');
+    return null; // Return null if the client isn't available
+  }
 
   try {
     const response = await gemini.models.generateContent({

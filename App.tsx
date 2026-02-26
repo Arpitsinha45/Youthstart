@@ -20,7 +20,7 @@ import { InteractiveMenu, InteractiveMenuItem } from './components/ui/modern-mob
 
 import { LATEST_STORIES } from './constants';
 
-import ConfigError from './components/ConfigError';
+import { getGeminiClient } from './lib/gemini';
 
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -34,15 +34,13 @@ const AppContent: React.FC = () => {
   const [isSidebarMinimized, setIsSidebarMinimized] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [currentView, setCurrentView] = useState<'home' | 'admin' | 'login' | 'about' | 'article'>('home');
+  const [hasAIKey, setHasAIKey] = useState(false);
 
-  const missingKeys = [];
-  if (!import.meta.env.VITE_SUPABASE_URL) missingKeys.push('VITE_SUPABASE_URL');
-  if (!import.meta.env.VITE_SUPABASE_ANON_KEY) missingKeys.push('VITE_SUPABASE_ANON_KEY');
-  if (!import.meta.env.VITE_GEMINI_API_KEY) missingKeys.push('VITE_GEMINI_API_KEY');
-
-  if (missingKeys.length > 0 && !loading) {
-    return <ConfigError missingKeys={missingKeys} />;
-  }
+  useEffect(() => {
+    // Check for Gemini API key availability
+    const gemini = getGeminiClient();
+    setHasAIKey(!!gemini);
+  }, []);
 
   const mobileMenuItems: InteractiveMenuItem[] = [
     { label: 'Home', icon: Home },
@@ -201,7 +199,7 @@ const AppContent: React.FC = () => {
         <AdminPage onBack={() => {
           window.history.pushState({}, '', '/');
           setCurrentView('home');
-        }} stories={stories} setStories={setStories} />
+        }} stories={stories} setStories={setStories} hasAIKey={hasAIKey} />
       </ProtectedRoute>
     );
   }
@@ -233,6 +231,7 @@ const AppContent: React.FC = () => {
           searchQuery={searchQuery}
           onAboutClick={handleAboutClick}
           onAdminClick={handleAdminClick}
+          hasAIKey={hasAIKey}
         />
 
         {/* Content with top margin for fixed header */}
